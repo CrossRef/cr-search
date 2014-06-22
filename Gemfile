@@ -1,21 +1,12 @@
-source "http://rubygems.org"
-gem 'sinatra'
-gem 'haml'
-gem 'mongo'
-gem 'json'
-gem 'bson_ext'
-gem 'rsolr'
-gem 'will_paginate'
-gem 'bson'
-gem 'faraday'
-gem 'faraday_middleware'
-gem 'gabba'
-gem 'omniauth-orcid'
-gem 'rack-session-mongo'
-gem 'oauth2'
-gem 'resque'
-gem 'resque-pool'
-gem 'nokogiri'
-gem 'rake'
-gem 'parallel'
-gem 'newrelic_rpm'
+source 'https://rubygems.org'
+
+gem 'sinatra', '~> 1.4.5'
+gem 'haml', '~> 4.0.5'
+gem 'json', '~> 1.8.1'
+gem 'will_paginate', '~> 3.0.5'
+gem 'faraday', '~> 0.9.0'
+gem 'faraday_middleware', '~> 0.9.1'
+
+group :development do
+  gem 'pry', '~> 0.10.0'
+end

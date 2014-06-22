@@ -6,28 +6,19 @@
     margin-bottom: 0.4em;
   }
 
-- if page[:branding][:search_typeahead] == :funder_name  
-  :javascript
-    $(document).ready(function() {
-      $('.example-link').click(function(e) {
-        $('#search-input').val($(this).text());
-        $('#fundref-input').val("100000002");
-        $('#fundref-form').submit();
-      });
+:javascript
+  $(document).ready(function() {
+    $('.example-link').click(function(e) {
+      $('#search-input').val($(this).text());
+      $('#fundref-input').val("100000002");
+      $('#fundref-form').submit();
     });
-- else    
-  :javascript
-    $(document).ready(function() {
-      $('.example-link').click(function(e) {
-        $('.search-input').val($(this).text());
-        $('#search-form').submit();
-      });
-    });
-    
+  });
+
 %dl.lead
   %dt
     %a.example-link{:href => '#'} National Institutes of Health
   %dd
     Find all works produced from research that was funded by the National
     Institutes of Health.
-    
+

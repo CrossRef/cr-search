@@ -1,7 +1,4 @@
 :css
-  .item-tab.conf-proc {
-    border-left: 4px solid rgb(49, 145, 177);
-  }
   .item-data {
     padding: 1em;
   }
@@ -24,38 +21,17 @@
     margin-left: 0.2em;
     margin-right: 0.2em;
   }
-  .hl {
-    font-weight: bolder;
-  }
   .extra {
     color: #999;
     font-size: 1.2em;
     line-height: 1.3em;
   }
   .lead {
-    margin-bottom: .7em;  
+    margin-bottom: .7em;
   }
   .oa-tooltip, .oa-tooltip:visited, .oa-tooltip:hover {
     color: rgb(246, 130, 18);
     text-decoration: none;
-  }
-  .claim-ok {
-    color: rgb(167, 204, 145);
-  }
-  .claim-ok:hover {
-    color: rgb(137, 194, 115);
-  }
-  .claim-warn {
-    color: rgb(246, 130, 18);
-  }
-  .claim-warn:hover {
-    color: rgb(216, 100, 0);
-  }
-  .claim-none {
-    color: #ccc;
-  }
-  .claim-none:hover {
-    color: rgb(167, 204, 145);
   }
   .item-links-outer {
     margin-top: 1.5em;
@@ -90,36 +66,10 @@
     font-size: 1.3em;
     line-height: 1.2em;
   }
-  .well-transparent {
-    border: none;
-    text-transform: uppercase;
-    font-size: .9em;1
-    padding: .8em;
-    cursor: pointer;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-  }
-  .well-transparent i {
-    font-size: 1.2em;
-  }
-  .well-transparent:hover {
-    text-decoration: underline;
-  }
-  .btn-container button {
-    margin-left: .5em;
-    margin-top: 1em;
-  }
-  .btn-container {
-    text-align: right;
-  }
-  .btn-container button i {
-    margin-right: 0.4em;
-  }
 
 :javascript
   MAX_EXPAND_CHARS = 240;
-  
+
   $(document).ready(function() {
     $('.oa-tooltip').tooltip({
       title: 'Article is published in a journal present in the Directory of Open Access Journals.'
@@ -127,7 +77,7 @@
 
     $('.expand').each(function() {
       if ($(this).text().length > MAX_EXPAND_CHARS) {
-        $(this).data('full-text', $(this).text());        
+        $(this).data('full-text', $(this).text());
         $(this).text($(this).text().substring(0, MAX_EXPAND_CHARS));
         $(this).append($('<a>').addClass('expander').text('...').attr('href', '#'));
       }
@@ -140,303 +90,6 @@
       return false;
     });
 
-    var replacePopoverWithLogin = function($popover) {
-      var $p = $('<p>').text('Your sign in to ORCID has expired. Please sign back in.')
-      var $btnLogin = $('<button>').addClass('btn').addClass('btn-info').addClass('login-btn').text('Sign in to ORCID');
-      var $btnClose = $('<button>').addClass('btn').addClass('close-btn').text('Close');
-      var $btns = $('<div>').addClass('btn-container').append($btnClose).append($btnLogin);
-      var $content = $('<div>').append($p).append($btns);
-      var $newPopoverContent = $('<div>').addClass('popover-content').append($content);
-
-      $('.popover-content').replaceWith($newPopoverContent);
-
-      $('.login-btn').click(function(e) {
-        $.oauthpopup({path: '/auth/orcid',
-                      callback: function() {
-                        location.reload();
-                      }
-        });
-        e.preventDefault();
-        return false;
-      });
-
-      $('.close-btn').click(function(e) {
-        $popover.popover('destroy');
-        e.preventDefault();
-        return false;
-      });
-    }
-    
-    var performSync = function($popover) {
-      $.ajax({
-        url: '/orcid/sync',
-        success: function(data) {
-          if (data['status'] == 'ok') {
-            location.reload();
-          } else if (data['status'] == 'oauth_timeout') {
-            replacePopoverWithLogin($popover);
-          } else {
-            location.reload();
-          }  
-        },
-        error: function() {
-          location.reload();
-        }
-      });
-    }
-
-    var claimOkClickFn = function(e) {
-      $('.claim-none').popover('destroy');
-      $('.claim-warn').popover('destroy');
-      $('.claim-ok').popover('destroy');
-
-      var $p = $('<p>').text('Last time we checked, this work was in your ORCID profile. Refresh to retrieve changes to your works from ORCID.');
-      var $btnClose = $('<button>').addClass('btn').addClass('claim-close-btn').text('Close');
-      var $btnRefresh = $('<button>').addClass('btn').addClass('btn-warning').addClass('claim-refresh-btn').text('Refresh');
-      var $btns = $('<div>').addClass('btn-container').append($btnClose).append($btnRefresh);
-      var $content = $('<div>').append($p).append($btns);
-      var $popover = $(this);
-
-      $(this).popover({
-        placement: 'bottom',
-        html: true,
-        title: 'Work is in your ORCID profile',
-        content: $('<div>').append($content).html(),
-        trigger: 'manual'
-      });
-
-      $(this).popover('show');
-
-      $('.claim-close-btn').click(function(e) {
-        if (!$(this).hasClass('disabled')) {
-          $popover.popover('destroy');
-        }
-        e.preventDefault();
-        return false;
-      });
-
-      $('.claim-refresh-btn').click(function(e) {
-        if (!$(this).hasClass('disabled')) {
-          $(this).parent().find('.btn').addClass('disabled');
-          $(this).prepend($('<i>').addClass('icon-refresh').addClass('icon-spin'));
-          performSync($popover);
-        }
-        e.preventDefault();
-        return false;
-      });
-
-      e.preventDefault();
-      return false;
-    }
-
-    var performClaim = function($popover) {
-      $.ajax({
-          url: '/orcid/claim',
-          data: {doi: $popover.attr('id')},
-          success: function(data) {
-            if (data['status'] == 'ok' || data['status'] == 'ok_visible') {
-              $popover.popover('destroy');
-              $popover.removeClass('claim-none');
-              $popover.unbind('click');
-              $popover.find('i').removeClass('icon-circle-blank');
-              $popover.find('i').addClass('icon-circle');
-
-              if (data['status'] == 'ok') {
-                $popover.addClass('claim-warn');
-                $popover.click(claimWarnClickFn);
-                $popover.find('span').text('Not visible');
-              } else {
-                $popover.addClass('claim-ok');
-                $popover.click(claimOkClickFn);
-                $popover.find('span').text('In your profile');
-              }
-            } else if (data['status'] == 'oauth_timeout') {
-              replacePopoverWithLogin($popover);
-            } else {
-              $popover.popover('destroy');
-            }
-          },
-          error: function() {
-            $popover.popover('destroy');
-          }
-      });
-    }
-          
-    var claimNoneClickFn = function(e) {
-      $('.claim-none').popover('destroy');
-      $('.claim-warn').popover('destroy');
-      $('.claim-ok').popover('destroy');
-      
-      var $p = $('<p>').text('Are you sure you want to add this work to your ORCID profile?');
-      var $btnNo = $('<button>').addClass('btn').addClass('claim-no-btn').text('No');
-      var $btnOk = $('<button>').addClass('btn').addClass('btn-success').addClass('claim-ok-btn').text('Yes');
-      var $btns = $('<div>').addClass('btn-container').append($btnNo).append($btnOk);
-      var $content = $('<div>').append($p).append($btns);
-      var $popover = $(this);
-      
-      $(this).popover({
-        placement: 'bottom',
-        html: true,
-        title: 'Add work to ORCID',
-        content: $('<div>').append($content).html(),
-        trigger: 'manual'
-      });
-
-      $(this).popover('show');
-      
-      $('.claim-no-btn').click(function(e) {
-        if (!$(this).hasClass('disabled')) {
-          $popover.popover('destroy');
-        }
-        e.preventDefault();
-        return false;
-      });
-
-      $('.claim-ok-btn').click(function(e) {
-        if ($(this).hasClass('disabled')) {
-          return;
-        }
-        
-        $(this).prepend($('<i>').addClass('icon-refresh').addClass('icon-spin'));
-        $(this).addClass('disabled');
-        $(this).parent().find('.btn').addClass('disabled');
-
-        performClaim($popover);
-        
-        e.preventDefault();
-        return false;
-      });
-
-      e.preventDefault();
-      return false;
-    }
-
-    var claimWarnClickFn = function(e) {
-      $('.claim-none').popover('destroy');
-      $('.claim-warn').popover('destroy');
-      $('.claim-ok').popover('destroy');
-
-      var $text = $('<div>').html('<span>Work has been added to your ORCID profile but is marked as private. Visit your <a href="https://orcid.org/my-orcid" target="_blank"><i class="icon-external-link"></i>ORCID profile</a> to set this work\'s visibility to public or limited.<br/><br/>If you have removed this private work from your ORCID profile you can click the button below to remove it from CrossRef Metadata Search.</span>');
-      var $btnClose = $('<button>').addClass('btn').addClass('claim-close-btn').text('Close');
-      var $btnRefresh = $('<button>').addClass('btn').addClass('btn-warning').addClass('claim-refresh-btn').text('Refresh');
-      var $btnRemove = $('<button>').addClass('btn').addClass('btn-danger').addClass('claim-remove-btn').text('Remove');
-      var $btns = $('<div>').addClass('btn-container').append($btnClose).append($btnRefresh).append($btnRemove);
-      var $content = $('<div>').append($text).append($btns);
-      var $popover = $(this);
-      
-      $(this).popover({
-        placement: 'bottom',
-        html: true,
-        title: 'Work is private in your ORCID profile',
-        content: $('<div>').append($content).html(),
-        trigger: 'manual'
-      });
-
-      $(this).popover('show');
-      
-      $('.claim-close-btn').click(function(e) {
-        if (!$(this).hasClass('disabled')) {
-          $popover.popover('destroy');
-        }
-        e.preventDefault();
-        return false;
-      });
-
-      $('.claim-refresh-btn').click(function(e) {
-        if (!$(this).hasClass('disabled')) {
-          $(this).parent().find('.btn').addClass('disabled');
-          $(this).prepend($('<i>').addClass('icon-refresh').addClass('icon-spin'));
-          performSync($popover);
-        }
-        e.preventDefault();
-        return false;
-      });
-      
-      $('.claim-remove-btn').click(function(e) {
-        if ($(this).hasClass('disabled')) {
-          return;
-        }
-        
-        $(this).prepend($('<i>').addClass('icon-refresh').addClass('icon-spin'));
-        $(this).parent().find('.btn').addClass('disabled');
-
-        $.ajax({
-          url: '/orcid/unclaim',
-          data: {doi: $popover.attr('id')},
-          success: function() {
-            $popover.popover('destroy');
-            $popover.removeClass('claim-warn');
-            $popover.addClass('claim-none');
-            $popover.unbind('click');
-            $popover.click(claimNoneClickFn);
-            $popover.find('span').text('Add to ORCID');
-            $popover.find('i').removeClass('icon-circle');
-            $popover.find('i').addClass('icon-circle-blank');
-          },
-          error: function() {
-            $popover.popover('destroy');
-          }
-        });
-        e.preventDefault();
-        return false;
-      });
-
-      e.preventDefault();
-      return false;
-    }
-
-    $('.claim-ok').click(claimOkClickFn);
-    $('.claim-warn').click(claimWarnClickFn);
-    $('.claim-none').click(claimNoneClickFn);
-  });
-
-%table  
+%table
   - page[:items].each do |item|
     = partial :item, :page => page, :item => item
-
-- page[:items].each do |item|
-  - unless item.citations.empty?
-    .modal.hide{:id => "citations-#{item.hashed}"}
-      .modal-header
-        %button.close{'type' => 'button', 'data-dismiss' => 'modal'} &times;
-        %h3
-          Patent citations for
-          = item.doi
-      .modal-body
-        %table.table
-          %tr
-            %th ID
-            %th Type
-            %th Title
-          - item.citations.each do |citation|
-            %tr
-              %td= citation[:id]
-              %td= "#{citation[:type]} (#{citation[:authority]})"
-              %td
-                %a{:href => citation[:url]}= citation[:title]
-
-  - if signed_in? && !item.user_claimed?
-    .modal.hide{:id => "claim-#{item.hashed}"}
-      .doi{:id => "doi-#{item.hashed}", :style => 'display: none;'}= item.doi
-      .modal-header
-        %button.close{'type' => 'button', 'data-dismiss' => 'modal'} &times;
-        %h3
-          Add
-          = item.doi
-          to your ORCID profile
-      .modal-body
-        %p
-          You are adding
-          %b= item.coins_atitle
-          to your ORCID profile. Double check that you were a
-          contributor to this work.
-        %p Add this work to your ORCID profile?  
-      .modal-footer
-        %button.btn{'type' => 'button', 'data-dismiss' => 'modal'} No, thanks
-        %button.btn.btn-primary{:id => "claim-button-#{item.hashed}"} Yes, do it
-
-:javascript
-  function showCitationsBox(hashed) {
-    $('#citations-' + hashed).modal();
-  }
-

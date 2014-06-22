@@ -12,7 +12,7 @@
   .gap {
     display: none;
   }
-  
+
   .nav-list > .active > a {
     background-color: rgb(56, 166, 203);
   }
@@ -36,26 +36,26 @@
   }
 
 = partial :search_header, :page => page
-        
+
 .row-fluid
   .span3
     = partial :facets, :page => page
   .span9
     .list-info
       .pull-right
-        %h6.number= "Page #{page[:page]} of #{page[:paginate].total_rows} results" 
+        %h6.number= "Page #{page[:page]} of #{page[:paginate].total_results} results"
       %span
         %h6
           Sort by:
-          - if page[:bare_sort] == 'year'
+          - if params[:sort] == 'published'
             %a{:href => "#{search_link({:sort => 'score'})}"} relevance
             %b publication year
           - else
             %b relevance
-            %a{:href => "#{search_link({:sort => 'year'})}"} publication year
-          - if page[:branding][:downloads].include?(:fundref_csv) && !page[:items].empty?
+            %a{:href => "#{search_link({:sort => 'published'})}"} publication year
+          - if !page[:items].empty?
             %span{:style => 'margin-left: 10em;'}
-              %a{:href => fundref_csv_link(page[:funder][:id])}
+              %a{:href => "/?q=#{page[:funder][:id]}&format=csv"}
                 %i.icon-download-alt
                 Download as CSV
 
@@ -65,12 +65,6 @@
     .item-paging.bottom
       = will_paginate page[:paginate], :renderer => BootstrapLinkRenderer
 
-= partial :cite_box, :page => page
-
 %hr
 .footer
-  - if page[:branding][:footer_links_profile] == :chorus
-    %a{:href => 'http://chorusaccess.org/contact-us'} Leave feedback
-  - else
-    Feedback:
-    %a{:href => 'mailto:search@crossref.org'} search@crossref.org
+  %a{:href => 'http://chorusaccess.org/contact-us'} Leave feedback

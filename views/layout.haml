@@ -10,19 +10,8 @@
     %script{:type => 'text/javascript', :src => '/spin.min.js'}
     %script{:type => 'text/javascript', :src => '/format.min.js'}
     %script{:type => 'text/javascript', :src => '/typeahead.min.js'}
-    %script{:type => 'text/javascript', :src => '/jquery.oauthpopup.js'}
     %script{:type => 'text/javascript', :src => '/bootstrap.notify.js'}
     %script{:type => 'text/javascript', :src => '/hogan.js'}
-    :javascript
-       var _gaq = _gaq || [];
-       _gaq.push(['_setAccount', 'UA-34536574-2']);
-       _gaq.push(['_trackPageview']);
-       
-       (function() {
-         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-       })();
     :css
       a, a:visited {
         color: rgb(56, 166, 203);
@@ -38,17 +27,3 @@
     .notifications.top-left
     .container-fluid
       = yield
-    - if expired_session?  
-      :javascript
-        $(document).ready(function() {
-          $('.top-left').notify({
-            message: {text: "You have been signed out of ORCID (sign-ins last for 1 hour)."},
-            type: 'warn',
-            fadeOut: {enabled: true, delay: 4000}
-          }).show();
-
-          $.ajax({
-            url: '/auth/signout',
-          });
-        });
-

@@ -1,71 +1,51 @@
 %tr
   %td.item-data
-    - unless item.title.nil?
-      %p.lead  
-        - if page[:branding][:show_doaj_label] && item.open_access?
-          %a.oa-tooltip{:href => "http://www.doaj.org/doaj?func=search&uiLanguage=en&template=&query=#{item.coins_title}", :target => '_blank'}
-            %span.small{:style => 'font-size: 0.8em;'} DOAJ
-        = item.title.first
-        
+    - if item.title
+      %p.lead= item.title
       %p.extra{:style => 'margin-top: .5em;'}
         %span
-          - if test_doi?(item.doi)
-            %b{:style => 'color: rgb(207, 121, 121);'} Example Item
-          - else
-            %b= item.type
+          %b= item.type
           published
           %b
             - unless item.day.nil?
               = item.day
             - unless item.month.nil?
               = item.month
-            - unless item.year.empty?
-              = item.year.first
-        - unless item.publication.empty?
+            - if item.year
+              = item.year
+        - if item.publication
           %span
             in
-            %b= item.publication.first
-        - unless item.volume.empty?
+            %b= item.publication
+        - if item.volume
           %span
             volume
-            %b= item.volume.first
-        - unless item.issue.empty?
+            %b= item.volume
+        - if item.issue
           %span
             issue
-            %b= item.issue.first
-        - if !item.first_page.empty? && !item.last_page.empty?
+            %b= item.issue
+        - if item.first_page && item.last_page
           %span
             on pages
-            %b= item.first_page.first
+            %b= item.first_page
             to
-            %b= item.last_page.first
-        - elsif !item.first_page.empty?
+            %b= item.last_page
+        - elsif item.first_page
           %span
             on page
-            %b= item.first_page.first
+            %b= item.first_page
 
-    - unless item.grant_info.empty?
+    - if item.funders
       %p.extra
         %span Research funded by
-        %span= item.grant_info.join('  |  ')
-        
+        %span= item.funders.join('  |  ')
+
     - unless item.authors.empty?
-      %p.expand= "Authors: #{item.authors.first}"
+      %p.expand= "Authors: #{item.authors.join(', ')}"
 
-    - unless item.editors.empty?
-      %p.expand= "Editors: #{item.editors.first}"
-
-    - unless item.chairs.empty?
-      %p.expand= "Chairs: #{item.chairs.first}"
-
-    - unless item.translators.empty?
-      %p.expand= "Translated: #{item.translators.first}"
-
-    - unless item.contributors.empty?
-      %p.expand= "Contributors: #{item.contributors.first}"
-
-    - unless item.supplementary_ids.empty?
-      %p.expand= "Other IDs: #{item.supplementary_ids.join(', ')}"
+    - if item.supplementary_id
+      %p.expand= "Other IDs: #{item.supplementary_id}"
 
     = partial :item_links, :item => item
-        
+

@@ -1,32 +1,15 @@
 require 'will_paginate'
 
 class Paginate
+  attr_reader :current_page, :per_page, :total_results
 
-  def initialize page, per_page, solr_response
-    @page = page
+  def initialize current_page, per_page, total_results
+    @current_page = current_page
     @per_page = per_page
-    @response = solr_response['response']
-    @header = solr_response['header']
-  end
-
-  def docs
-    @response['docs']
-  end
-
-  def per_page
-    @per_page
-  end
-
-  def current_page
-    @page
+    @total_results = total_results
   end
 
   def total_pages
-    (@response['numFound'] / per_page.to_f).ceil
+    (@total_results / @per_page.to_f).ceil
   end
-
-  def total_rows
-    @response['numFound']
-  end
-
 end

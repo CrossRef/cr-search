@@ -1,40 +1,14 @@
-= item.coins_span
 .item-links-outer
   .item-links
-    - unless item.citations.empty?
-      %a{:href => "javascript:showCitationsBox('#{item.hashed}');"}
-        %i.icon-resize-small
-        = item.citations.count
-        citations from patents     
-    %a{:href => item.doi}
+    %a{href: item.url}
       %i.icon-external-link
-      = item.doi
+      = item.url
     %span.dropdown
-      %a.dropdown-toggle{:role => 'button', 'data-toggle' => 'dropdown', :href => '#'}
+      %a.dropdown-toggle{role: 'button', 'data-toggle' => 'dropdown', href: '#'}
         %i.icon-double-angle-down
         Actions
-      %ul.dropdown-menu{:role => 'menu'}
+      %ul.dropdown-menu{role: 'menu'}
         %li
-          %a.cite-link{:href => "javascript:showCiteBox('#{item.doi}', '#{item.coins_atitle}');"}
-            %i.icon-quote-left
-            Cite
-        - unless facet?('publication') || item.publication.nil?
-          %li
-            %a{:href => "#{facet_link('publication', item.coins_title)}"}
-              %i.icon-filter
-              Filter on this publication
-    - if signed_in?
-      - if item.in_user_profile?
-        %span.well-transparent.claim-ok{:id => item.doi}
-          %img{:src => '/orcid_16x16.gif'}
-          %span In your profile
-      - elsif item.user_claimed?
-        %span.well-transparent.claim-warn{:id => item.doi}
-          %img{:src => '/orcid_16x16.gif'}
-          %span Not visible
-      - else
-        %span.well-transparent.claim-none{:id => item.doi}
-          %img{:src => '/orcid_16x16.gif'}
-          %span Add to ORCID
-  
-    
+          %a{href: "#{facet_link('publication', item.short_publication)}"}
+            %i.icon-filter
+            Filter on this publication (not working)

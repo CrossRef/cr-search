@@ -1,7 +1,4 @@
 :css
-  .cr-red {
-    color: rgb(192, 70, 62);
-  }
   .home-link, .home-link:visited, .home-link:hover {
     text-decoration: none;
     color: black;
@@ -70,43 +67,42 @@
     line-height: 2em;
   }
 
-- if page[:branding][:search_typeahead] == :funder_name
-  :javascript
-    $(document).ready(function() {
-      var fundersRemote = new Bloodhound({
-        name: 'funders',
-        datumTokenizer: function(d) { return d.tokens; },
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        remote: {
-          url: 'http://api.crossref.org/funders?query=%QUERY',
-          filter: function(dataResponse) { return dataResponse.message.items; }
-        },
-        limit: 16,
-        dupDetector: function(r, l) { return false; }
-      });
-
-      fundersRemote.initialize();
-
-      var suggestionLayout = Hogan.compile('<p>{{name}} <small>{{location}}</small></p>');
-
-      $('#search-input').typeahead(null, {
-        name: 'funders',
-        source: fundersRemote.ttAdapter(),
-        templates: {
-          suggestion: function(d) { return suggestionLayout.render(d) }
-        },
-        limit: 16
-      });
-
-      $('#search-input').bind('typeahead:autocompleted typeahead:selected', function(e, datum) {
-        $('#fundref-input').val(datum['id']);
-        $('#fundref-form').submit();
-      });
+:javascript
+  $(document).ready(function() {
+    var fundersRemote = new Bloodhound({
+      name: 'funders',
+      datumTokenizer: function(d) { return d.tokens; },
+      queryTokenizer: Bloodhound.tokenizers.whitespace,
+      remote: {
+        url: 'http://api.crossref.org/funders?query=%QUERY',
+        filter: function(dataResponse) { return dataResponse.message.items; }
+      },
+      limit: 16,
+      dupDetector: function(r, l) { return false; }
     });
 
-  .proxy-form{:style => 'display: none;'}
-    %form#fundref-form{:method => 'GET', :action => page[:branding][:search_action]}
-      %input#fundref-input{:name => 'q'}
+    fundersRemote.initialize();
+
+    var suggestionLayout = Hogan.compile('<p>{{name}} <small>{{location}}</small></p>');
+
+    $('#search-input').typeahead(null, {
+      name: 'funders',
+      source: fundersRemote.ttAdapter(),
+      templates: {
+        suggestion: function(d) { return suggestionLayout.render(d) }
+      },
+      limit: 16
+    });
+
+    $('#search-input').bind('typeahead:autocompleted typeahead:selected', function(e, datum) {
+      $('#fundref-input').val(datum['id']);
+      $('#fundref-form').submit();
+    });
+  });
+
+.proxy-form{style: 'display: none;'}
+  %form#fundref-form{method: 'GET', action: '/'}
+    %input#fundref-input{:name => 'q'}
 
 .row-fluid
   - if page[:mini_header]
@@ -114,51 +110,18 @@
       .pull-right
         .simple-nav-outer.simple-nav-bump-up
           .simple-nav
-            - if page[:branding][:show_profile_link]
-              .pull-right
-                = partial :profile_link, {}
-            - if page[:branding][:header_links_profile] == :fundref
-              %a{:href => '/'} Metadata Search
-            - elsif page[:branding][:header_links_profile] == :crmds
-              %a{:href => '/fundref'} FundRef
-              %a{:href => '/references'} Link References
-              %a{:href => '/help/status'} Status
-              %a{:href => '/help/api'} API
-              %a{:href => '/help/search'} Help
-            - elsif page[:branding][:header_links_profile] == :chorus
-              %a{:href => 'http://chorusaccess.org'} CHORUS
-            - else
-              %a{:href => '/help/search'} Help  
-              %a{:href => '/help/status'} Status
-              %a{:href => '/help/api'} API
+            %a{href: 'http://chorusaccess.org'} CHORUS
   - else
     .span-header.span3
-      %a.home-link{:href => page[:branding][:logo_link]}
-        %img{:src => page[:branding][:logo_path]}
+      %a.home-link{href: '/'}
+        %img{src: '/chorus-logo.png'}
     .span-header.span9
       .pull-right
         .simple-nav-outer
           .simple-nav.smaller
-            - if page[:branding][:show_profile_link]
-              .pull-right
-                = partial :profile_link, {}
-            - if page[:branding][:header_links_profile] == :fundref
-              %a{:href => '/'} Metadata Search
-            - elsif page[:branding][:header_links_profile] == :crmds
-              %a{:href => '/fundref'} FundRef
-              %a{:href => '/references'} Link References
-              %a{:href => '/help/status'} Status
-              %a{:href => '/help/api'} API
-              %a{:href => '/help/search'} Help
-            - elsif page[:branding][:header_links_profile] == :chorus
-              %a{:href => 'http://chorusaccess.org'} CHORUS
-            - else
-              %a{:href => '/help/search'} Help  
-              %a{:href => '/help/status'} Status
-              %a{:href => '/help/api'} API
-      %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
+            %a{href: 'http://chorusaccess.org'} CHORUS
+      %form#search-form{:method => 'GET', action: '/'}
         .search-in-header
-          %input.input.input-xlarge.search-input#search-input{:placeholder => page[:branding][:search_placeholder], :name => 'q', :type => 'text', :value => page[:bare_query]}
-          %i.icon-search   
+          %input.input.input-xlarge.search-input#search-input{placeholder: 'Funder name', name: 'q', type: 'text', value: page[:bare_query]}
+          %i.icon-search
 %hr
-    

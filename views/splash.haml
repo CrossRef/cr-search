@@ -1,7 +1,4 @@
 :css
-  .cr-red {
-    color: rgb(192, 70, 62);
-  }
   .search {
     margin-top: 2em;
     position: relative;
@@ -20,7 +17,7 @@
     font-size: 2.5em;
     width: 20em;
   }
-  h1 {  
+  h1 {
     font-size: 4em;
     line-height: 1.2em;
   }
@@ -42,55 +39,17 @@
     $('#search-input').focus();
   });
 
-- if page[:branding][:search_typeahead] == :funder_name
-  :javascript
-    $(document).ready(function() {
-      var fundersRemote = new Bloodhound({
-        name: 'funders',
-        datumTokenizer: function(d) { return d.tokens; },
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        remote: {
-          url: 'http://api.crossref.org/funders?query=%QUERY',
-          filter: function(dataResponse) { return dataResponse.message.items; }
-        },
-        limit: 16,
-        dupDetector: function(r, l) { return false; }
-      });
-      
-      fundersRemote.initialize();
-
-      var suggestionLayout = Hogan.compile('<p>{{name}} <small>{{location}}</small></p>');
-
-      $('#search-input').typeahead(null, {
-        name: 'funders',
-        source: fundersRemote.ttAdapter(),
-        templates: {
-          suggestion: function(d) { return suggestionLayout.render(d) }
-        },
-        limit: 16
-      });
-      
-      $('#search-input').bind('typeahead:autocompleted typeahead:selected', function(e, datum) {
-        $('#fundref-input').val(datum['id']);
-        $('#fundref-form').submit();
-      });
-    });
-
-  .proxy-form{:style => 'display: none;'}
-    %form#fundref-form{:method => 'GET', :action => page[:branding][:search_action]}
-      %input#fundref-input{:name => 'q'}
-
 .row-centered.break-below
-  = partial :search_header, :page => page.merge({:mini_header => true})
-  
-.spacer  
+  = partial :search_header, page: page.merge(mini_header: true)
+
+.spacer
 .row-centered
   %h1
     %center
-      %img{:src => page[:branding][:logo_path]}
-  %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
+      %img{src: '/chorus-logo.png'}
+  %form#search-form{method: 'GET', action: '/'}
     .search
-      %input.input.input-xlarge.search-input#search-input{:name => 'q', :type => 'text', :value => page[:query], :placeholder => page[:branding][:search_placeholder]}
+      %input.input.input-xlarge.search-input#search-input{name: 'q', type: 'text', placeholder: 'Funder name'}
       %i.icon-search
 
 .row-centered
@@ -101,7 +60,7 @@
           .pull-right
             %i.icon-caret-down
           %span Help! - Example Queries
-      .accordion-body#help-body  
+      .accordion-body#help-body
         .accordion-inner
-          = partial page[:branding][:examples_layout], :page => page
+          = partial :fundref_help_list
 
