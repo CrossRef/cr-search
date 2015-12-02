@@ -130,9 +130,10 @@
             %a{:href => '/help/search'} Help  
             %a{:href => '/help/status'} Status
             %a{:href => 'http://api.crossref.org'} API
-    %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
-      .search-in-header
-        %input.input.input-xlarge.search-input#search-input{:placeholder => page[:branding][:search_placeholder], :name => 'q', :type => 'text', :value => page[:bare_query]}
-        %i.icon-search   
+    - unless page[:disable_search_box]
+      %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
+        .search-in-header
+          %input.input.input-xlarge.search-input#search-input{:placeholder => page[:branding][:search_placeholder], :name => 'q', :type => 'text', :value => page[:bare_query]}
+          %i.icon-search   
 %hr
     

@@ -80,7 +80,7 @@
     %form#fundref-form{:method => 'GET', :action => page[:branding][:search_action]}
       %input#fundref-input{:name => 'q'}
 
-= partial :search_header, :page => page
+= partial :search_header, :page => page.merge({:disable_search_box => true})
 
 .spacer  
 .row-centered
