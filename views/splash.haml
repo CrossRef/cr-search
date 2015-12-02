@@ -82,25 +82,20 @@
 
 = partial :search_header, :page => page.merge({:disable_search_box => true})
 
-.spacer  
+.spacer{:style => 'margin-top: 12em;'}
 .row-centered
-  %h1
-    %center
-      %img{:src => page[:branding][:logo_path]}
+  - if page[:branding][:header_links_profile] == :crmds
+    %h1{:style => 'line-height: 1.5em;'}
+      Search the metadata of 77,000,000 DOIs covering journal articles, books, standards, datasets and more
+  - elsif page[:branding][:header_links_profile] == :fundref
+    %h1{:style => 'line-height: 1.5em;'}
+      Search 12,000 funders connected to 12,000,000 DOI records with funding data
+.spacer{:style => 'margin-top: 6em;'}
+.row-centered
   %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
     .search
       %input.input.input-xlarge.search-input#search-input{:name => 'q', :type => 'text', :value => page[:query], :placeholder => page[:branding][:search_placeholder]}
       %i.icon-search
-
-.row-centered
-  .accordion#help-accordion
-    .accordion-group
-      .accordion-heading
-        %a.accordion-toggle{:href => '#help-body', 'data-toggle' => 'collapse', 'data-parent' => '#help-accordion'}
-          .pull-right
-            %i.icon-caret-down
-          %span Help! - Example Queries
-      .accordion-body#help-body  
-        .accordion-inner
-          = partial page[:branding][:examples_layout], :page => page
+      - if page[:branding][:examples_layout] == :crmds_help_list
+        %a{:href => '/help/search'} Search help
 
