@@ -532,10 +532,10 @@ helpers do
 
   def splash_stats
     loc = settings.solr_select
-    {:dois => count_result(
-       settings.solr.get(loc, {:params => {:q => '*:*', :rows => 0}})),
-     :funding_dois => count_result(
-       settings.solr.get(loc, {:params => {:q => 'funder_doi:[* TO *]', :rows => 0}})),
+    {:dois =>
+       settings.solr.get(loc, {:params => {:q => '*:*', :rows => 0}})['response']['numFound'],
+     :funding_dois =>
+       settings.solr.get(loc, {:params => {:q => 'funder_doi:[* TO *]', :rows => 0}})['response']['numFound'],
      :funders => 11503}
   end
 
