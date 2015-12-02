@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
-  <ShortName>CrossRef Metadata Search</ShortName>
+  <ShortName>Crossref Metadata Search</ShortName>
   <Description>Search Metadata of over 50 million journal articles, conference proceedings and books</Description>
   <Contact>kward@crossref.org</Contact>
   <Url type="text/html"
        template="http://search.labs.crossref.org/?q={searchTerms}&amp;page={startPage?}"/>
-  <Developer>CrossRef Labs</Developer>
+  <Developer>Crossref Labs</Developer>
   <Attribution>CC by-nc 2.5.</Attribution>
   <SyndicationRight>open</SyndicationRight>
   <AdultContent>false</AdultContent>

@@ -3,7 +3,7 @@
 # Java applications with deep visibility and low overhead.  For more
 # information, visit www.newrelic.com.
 #
-# This configuration file is custom generated for CrossRef_1
+# This configuration file is custom generated for Crossref_1
 #
 # This section is for settings common to all environments.
 # Do not add anything above this next line.
@@ -41,7 +41,7 @@ common: &default_settings
   # For example, to report data to"My Application" and "My Application 2" use this:
   # app_name: My Application;My Application 2
   # This setting is required.
-  app_name: CrossRef Metadata Search
+  app_name: Crossref Metadata Search
 
   # The agent uses its own log file to keep its logging
   # separate from that of your application.  Specify the log level here.
