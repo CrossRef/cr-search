@@ -652,7 +652,7 @@ helpers do
 
     stats << {
       :value => settings.orcids.count({:query => {:updated => true}}),
-      :name => 'Number of ORCID profiles updated',
+      :name => 'Number of ORCID records updated',
       :number => true
     }
 
