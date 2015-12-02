@@ -680,7 +680,7 @@ helpers do
     prefixes = branding[:filter_prefixes]
 
     if !params.has_key?('q')
-      haml :splash, :locals => {:page => {:branding => branding}}
+      haml :splash, :locals => {:page => {:stats => splash_stats, :branding => branding}}
     elsif params.has_key?('format') && params['format'] == 'csv'
       funder_dois = funder_doi_from_id(params['q'])
       solr_result = select_all(fundref_doi_query(funder_dois, prefixes))
@@ -719,7 +719,6 @@ helpers do
 
       haml :results, :locals => {
         :page => {
-          :stats => splash_stats,
           :branding => branding,
           :funder => funder_info
         }.merge(page)
