@@ -631,13 +631,13 @@ helpers do
 
     stats << {
       :value => fundref_id_result['response']['numFound'],
-      :name => 'Number of FundRef enabled DOIs with funder IDs',
+      :name => 'Number of work DOIs with funder DOIs',
       :number => true
     }
 
     stats << {
       :value => fundref_result['response']['numFound'],
-      :name => 'Total number of FundRef enabled DOIs',
+      :name => 'Total number of DOIs with funding data',
       :number => true
     }
 
@@ -944,7 +944,7 @@ get '/funders/prefixes' do
 
   content_type 'text/csv'
   CSV.generate do |csv|
-    csv << ['Prefix', 'Total DOIs with FundRef information', 'DOIs with FundRef funder IDs']
+    csv << ['Prefix', 'Total work DOIs with funding data', 'Work DOIs with funder DOIs']
     combined.each_pair do |prefix, info|
       csv << [prefix, (info[:total] or 0), (info[:with_id] or 0)]
     end
