@@ -85,11 +85,17 @@
 .spacer{:style => 'margin-top: 12em;'}
 .row-centered
   - if page[:branding][:header_links_profile] == :crmds
-    %h1{:style => 'line-height: 1.5em;'}
-      Search the metadata of 77,000,000 DOIs covering journal articles, books, standards, datasets and more
+    %h1{:style => 'line-height: 1.5em; color: #4f5757;'}
+      Search the metadata of
+      %span{:style => 'color: #3db0c7;'} 77,000,000 
+      DOIs covering journal articles, books, standards, datasets and more
   - elsif page[:branding][:header_links_profile] == :fundref
-    %h1{:style => 'line-height: 1.5em;'}
-      Search 12,000 funders connected to 12,000,000 DOI records with funding data
+    %h1{:style => 'line-height: 1.5em; color: #4f5757;'}
+      Search
+      %span{:style => 'color: #ffc62c;'} 12,000
+      funders connected to
+      %span{:style => 'color: #ee3340;'} 12,000,000
+      DOI records with funding data
 .spacer{:style => 'margin-top: 6em;'}
 .row-centered
   %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
