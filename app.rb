@@ -530,6 +530,15 @@ helpers do
     plain_doi.start_with?('10.5555') || plain_doi.start_with?('10.55555')
   end
 
+  def splash_stats
+    loc = settings.solr_select
+    {:dois => count_result(
+       settings.solr.get(loc, {:params => {:q => '*:*', :rows => 0}})),
+     :funding_dois => count_result(
+       settings.solr.get(loc, {:params => {:q => 'funder_doi:[* TO *]', :rows => 0}})),
+     :funders => 11503}
+  end
+
   def index_stats
     loc = settings.solr_select
 
@@ -710,6 +719,7 @@ helpers do
 
       haml :results, :locals => {
         :page => {
+          :stats => splash_stats,
           :branding => branding,
           :funder => funder_info
         }.merge(page)
@@ -1051,7 +1061,8 @@ get '/' do
   if !params.has_key?('q') || !query_terms
     haml :splash, :locals => {
       :page => {
-        :query => '', 
+        :query => '',
+        :stats => splash_stats
         :branding => settings.crmds_branding
       }
     }
