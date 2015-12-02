@@ -106,56 +106,33 @@
       %input#fundref-input{:name => 'q'}
 
 .row-fluid
-  - if page[:mini_header]
-    .span-header
-      .pull-right
-        .simple-nav-outer.simple-nav-bump-up
-          .simple-nav
-            - if page[:branding][:show_profile_link]
-              .pull-right
-                = partial :profile_link, {}
-            - if page[:branding][:header_links_profile] == :fundref
-              %a{:href => '/'} Metadata Search
-            - elsif page[:branding][:header_links_profile] == :crmds
-              %a{:href => '/fundref'} Funding Data
-              %a{:href => '/references'} Link References
-              %a{:href => '/help/status'} Status
-              %a{:href => 'http://api.crossref.org'} API
-              %a{:href => '/help/search'} Help
-            - elsif page[:branding][:header_links_profile] == :chorus
-              %a{:href => 'http://chorusaccess.org'} CHORUS
-            - else
-              %a{:href => '/help/search'} Help  
-              %a{:href => '/help/status'} Status
-              %a{:href => 'http://api.crossref.org'} API
-  - else
-    .span-header.span3
-      %a.home-link{:href => page[:branding][:logo_link]}
-        %img{:src => page[:branding][:logo_small_path]}
-    .span-header.span9
-      .pull-right
-        .simple-nav-outer
-          .simple-nav.smaller
-            - if page[:branding][:show_profile_link]
-              .pull-right
-                = partial :profile_link, {}
-            - if page[:branding][:header_links_profile] == :fundref
-              %a{:href => '/'} Metadata Search
-            - elsif page[:branding][:header_links_profile] == :crmds
-              %a{:href => '/fundref'} Funding Data
-              %a{:href => '/references'} Link References
-              %a{:href => '/help/status'} Status
-              %a{:href => 'http://api.crossref.org'} API
-              %a{:href => '/help/search'} Help
-            - elsif page[:branding][:header_links_profile] == :chorus
-              %a{:href => 'http://chorusaccess.org'} CHORUS
-            - else
-              %a{:href => '/help/search'} Help  
-              %a{:href => '/help/status'} Status
-              %a{:href => 'http://api.crossref.org'} API
-      %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
-        .search-in-header
-          %input.input.input-xlarge.search-input#search-input{:placeholder => page[:branding][:search_placeholder], :name => 'q', :type => 'text', :value => page[:bare_query]}
-          %i.icon-search   
+  .span-header.span3{:style => "padding-top: 0.7em;"}
+    %a.home-link{:href => page[:branding][:logo_link]}
+      %img{:src => page[:branding][:logo_small_path]}
+  .span-header.span9
+    .pull-right
+      .simple-nav-outer
+        .simple-nav.smaller
+          - if page[:branding][:show_profile_link]
+            .pull-right
+              = partial :profile_link, {}
+          - if page[:branding][:header_links_profile] == :fundref
+            %a{:href => '/'} Metadata Search
+          - elsif page[:branding][:header_links_profile] == :crmds
+            %a{:href => '/fundref'} Funding Data
+            %a{:href => '/references'} Link References
+            %a{:href => '/help/status'} Status
+            %a{:href => 'http://api.crossref.org'} API
+            %a{:href => '/help/search'} Help
+          - elsif page[:branding][:header_links_profile] == :chorus
+            %a{:href => 'http://chorusaccess.org'} CHORUS
+          - else
+            %a{:href => '/help/search'} Help  
+            %a{:href => '/help/status'} Status
+            %a{:href => 'http://api.crossref.org'} API
+    %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
+      .search-in-header
+        %input.input.input-xlarge.search-input#search-input{:placeholder => page[:branding][:search_placeholder], :name => 'q', :type => 'text', :value => page[:bare_query]}
+        %i.icon-search   
 %hr
     
