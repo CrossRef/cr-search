@@ -1062,7 +1062,7 @@ get '/' do
     haml :splash, :locals => {
       :page => {
         :query => '',
-        :stats => splash_stats
+        :stats => splash_stats,
         :branding => settings.crmds_branding
       }
     }
