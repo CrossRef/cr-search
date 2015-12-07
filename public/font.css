@@ -1,5 +1,13 @@
+@import url("http://fast.fonts.net/lt/1.css?apiType=css&c=e98f5793-4cb3-43cf-9c5a-90c30937c6bd&fontids=903184,903187,903190,903193,903196,903199,903202,903205");
+
 @font-face {
     font-family:"HelveticaNeueETW01-55Rg";
     src:url("http://assets.crossref.org/private/fonts/903190/706ec8e5-fe4a-4518-91a6-7aba4d3d333f.eot?#iefix");
     src:url("http://assets.crossref.org/private/fonts/903190/706ec8e5-fe4a-4518-91a6-7aba4d3d333f.eot?#iefix") format("eot"),url("http://assets.crossref.org/private/fonts/903190/dc50c02f-3f77-4e75-b89c-e3f9bb4752e6.woff2") format("woff2"),url("http://assets.crossref.org/private/fonts/903190/ce6f5b38-1cb5-4a27-8182-583aa68b2436.woff") format("woff"),url("http://assets.crossref.org/private/fonts/903190/ff06cde7-e06a-4cf0-af4d-5b2f737bf544.ttf") format("truetype"),url("http://assets.crossref.org/private/fonts/903190/958b12cf-2908-4254-8cb9-9b12c3aa151e.svg#958b12cf-2908-4254-8cb9-9b12c3aa151e") format("svg");
+}
+
+@font-face{
+    font-family:"HelveticaNeueETW01-45Lt";
+    src:url("Fonts/903184/e0781a75-0ecb-464e-b6e9-85780ddc0921.eot?#iefix");
+    src:url("Fonts/903184/e0781a75-0ecb-464e-b6e9-85780ddc0921.eot?#iefix") format("eot"),url("Fonts/903184/b8765d4b-d9a3-48b9-ac65-560e7517cf0e.woff2") format("woff2"),url("Fonts/903184/d7d2e6c6-fc3a-41a5-9b52-648e12e215b2.woff") format("woff"),url("Fonts/903184/cb64744b-d0f7-4ef8-a790-b60d6e3e4f21.ttf") format("truetype"),url("Fonts/903184/ccde919e-a712-41ef-b90f-9efc47661659.svg#ccde919e-a712-41ef-b90f-9efc47661659") format("svg");
 }
