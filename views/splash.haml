@@ -85,12 +85,12 @@
 .spacer{:style => 'margin-top: 12em;'}
 .row-centered
   - if page[:branding][:header_links_profile] == :crmds
-    %h1{:style => 'font-family: HelveticaNeueETW01-45Lt; font-size: 3.2em; line-height: 1.5em; color: #4f5757;'}
+    %span{:style => 'font-family: HelveticaNeueETW01-45Lt; font-size: 3.6em; line-height: 1.5em; color: #4f5757;'}
       Search the metadata of
       %span.number{:style => 'color: #3db0c7;'}= page[:stats][:dois]
       DOIs covering journal articles, books, standards, datasets and more
   - elsif page[:branding][:header_links_profile] == :fundref
-    %h1{:style => 'font-family: HelveticaNeueETW01-45Lt; font-size: 3.2em; line-height: 1.5em; color: #4f5757;'}
+    %span{:style => 'font-family: HelveticaNeueETW01-45Lt; font-size: 3.6em; line-height: 1.5em; color: #4f5757;'}
       Search
       %span.number{:style => 'color: #ffc62c;'}= page[:stats][:funders]
       funders connected to
