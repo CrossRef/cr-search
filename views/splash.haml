@@ -80,7 +80,7 @@
     %form#fundref-form{:method => 'GET', :action => page[:branding][:search_action]}
       %input#fundref-input{:name => 'q'}
 
-= partial :search_header, :page => page.merge({:disable_search_box => true})
+= partial :search_header, :page => page.merge({:disable_search_box => true, :big_logo => true})
 
 .spacer{:style => 'margin-top: 12em;'}
 .row-centered
@@ -90,7 +90,7 @@
       %span.number{:style => 'color: #3db0c7;'}= page[:stats][:dois]
       journal articles, books, standards, datasets & more
   - elsif page[:branding][:header_links_profile] == :fundref
-    %span{:style => 'font-size: 3.2em; line-height: 1.5em; color: #4f5757;'}
+    %span{:style => 'font-size: 3.2em; line-height: 1.3em; color: #4f5757;'}
       Search
       %span.number{:style => 'color: #ffc62c;'}= page[:stats][:funders]
       funders connected to

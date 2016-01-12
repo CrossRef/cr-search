@@ -108,7 +108,10 @@
 .row-fluid
   .span-header.span3{:style => "padding-top: 0.7em;"}
     %a.home-link{:href => page[:branding][:logo_link]}
-      %img{:src => page[:branding][:logo_small_path]}
+      - if page[:big_logo]
+        %img{:src => page[:branding][:logo_path]}
+      - else
+        %img{:src => page[:branding][:logo_small_path]}
   .span-header.span9
     .pull-right
       .simple-nav-outer
