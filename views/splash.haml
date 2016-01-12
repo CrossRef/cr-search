@@ -86,7 +86,9 @@
 .row-centered
   - if page[:branding][:header_links_profile] == :crmds
     %span{:style => 'font-size: 3em; line-height: 1.3em; color: #4f5757;'}
-      Search the metadata &nbsp; of
+      Search the metadata
+      %br
+      of
       %span.number{:style => 'color: #3db0c7;'}= page[:stats][:dois]
       journal articles, books, standards, datasets & more
   - elsif page[:branding][:header_links_profile] == :fundref
