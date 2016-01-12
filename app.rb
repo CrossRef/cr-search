@@ -113,8 +113,8 @@ configure do
 
   # Branding options
   set :crmds_branding, {
-    :logo_path => 'http://assets.crossref.org/logo/crossref-logo-200.svg',
-    :logo_small_path => 'http://assets.crossref.org/logo/crossref-logo-100.svg',
+    :logo_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-200.png',
+    :logo_small_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-100.png',
     :logo_link => '/',
     :search_placeholder => 'Search metadata...',
     :search_action => '/',
@@ -128,8 +128,8 @@ configure do
   }
 
   set :fundref_branding, {
-    :logo_path => 'http://assets.crossref.org/logo/crossref-logo-200.svg',
-    :logo_small_path => 'http://assets.crossref.org/logo/crossref-logo-100.svg',
+    :logo_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-200.png',
+    :logo_small_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-100.png',
     :logo_link => '/fundref',
     :search_placeholder => 'Search funders...',
     :search_action => '/fundref',
