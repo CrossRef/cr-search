@@ -116,7 +116,7 @@ configure do
     :logo_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-200.png',
     :logo_small_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-100.png',
     :logo_link => '/',
-    :search_placeholder => 'Search metadata...',
+    :search_placeholder => 'Title, author, DOI, ORCID iD, etc.',
     :search_action => '/',
     :search_typeahead => false,
     :examples_layout => :crmds_help_list,
