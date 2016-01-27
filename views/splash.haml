@@ -85,20 +85,20 @@
 .spacer{:style => 'margin-top: 12em;'}
 .row-centered
   - if page[:branding][:header_links_profile] == :crmds
-    %span{:style => 'font-size: 3em; line-height: 1.3em; color: #4f5757;'}
+    %span{:style => 'font-size: 3em; line-height: 1em; color: #4f5858;'}
       Search the metadata
       %br
       of
-      %span.number{:style => 'color: #3db0c7;'}= page[:stats][:dois]
+      %span.number{:style => 'color: #3eb1c8;'}= page[:stats][:dois]
       journal articles, books, standards, datasets & more
   - elsif page[:branding][:header_links_profile] == :fundref
-    %span{:style => 'font-size: 3em; line-height: 1.3em; color: #4f5757;'}
+    %span{:style => 'font-size: 3em; line-height: 1em; color: #4f5858;'}
       Search
-      %span.number{:style => 'color: #ffc62c;'}= page[:stats][:funders]
+      %span.number{:style => 'color: #ffc72c;'}= page[:stats][:funders]
       funders connected to
-      %span.number{:style => 'color: #ee3340;'}= page[:stats][:funding_dois]
+      %span.number{:style => 'color: #ef3340;'}= page[:stats][:funding_dois]
       DOI records with funding data
-.spacer{:style => 'margin-top: 6em;'}
+.spacer{:style => 'margin-top: 5em;'}
 .row-centered
   %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
     .search
