@@ -130,9 +130,9 @@ configure do
   set :fundref_branding, {
     :logo_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-200.png',
     :logo_small_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-100.png',
-    :logo_link => '/fundref',
+    :logo_link => '/funding',
     :search_placeholder => 'Search funders...',
-    :search_action => '/fundref',
+    :search_action => '/funding',
     :search_typeahead => :funder_name,
     :examples_layout => :fundref_help_list,
     :header_links_profile => :fundref,
@@ -387,7 +387,7 @@ helpers do
   end
 
   def fundref_csv_link id
-    "/fundref.csv?q=#{id}&format=csv"
+    "/funding.csv?q=#{id}&format=csv"
   end
 
   def facet? field_name
@@ -800,10 +800,18 @@ helpers do
 end
 
 get '/fundref' do
-  handle_fundref(settings.fundref_branding)
+  redirect '/funding'
 end
 
 get '/fundref.csv' do
+  redirect '/fundref.csv'
+end
+
+get '/funding' do
+  handle_fundref(settings.fundref_branding)
+end
+
+get '/funding.csv' do
   handle_fundref(settings.fundref_branding)
 end
 
