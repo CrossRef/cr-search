@@ -800,11 +800,21 @@ helpers do
 end
 
 get '/fundref' do
-  redirect '/funding'
+  url = '/funding'
+  url += '?' if params[:q] || params[:sort] || params[:format]
+  url += "q=#{URI.enode_www_form_component(params[:q])}" if params[:q]
+  url += "q=#{URI.enode_www_form_component(params[:sort])}" if params[:sort]
+  url += "q=#{URI.enode_www_form_component(params[:format])}" if params[:format]
+  redirect url
 end
 
 get '/fundref.csv' do
-  redirect '/fundref.csv'
+  url = '/funding.csv'
+  url += '?' if params[:q] || params[:sort] || params[:format]
+  url += "q=#{URI.enode_www_form_component(params[:q])}" if params[:q]
+  url += "q=#{URI.enode_www_form_component(params[:sort])}" if params[:sort]
+  url += "q=#{URI.enode_www_form_component(params[:format])}" if params[:format]
+  redirect url
 end
 
 get '/funding' do
