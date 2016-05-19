@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 require 'sinatra'
-require 'newrelic_rpm'
 require 'json'
 require 'rsolr'
 require 'mongo'
