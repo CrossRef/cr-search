@@ -800,9 +800,9 @@ end
 
 get '/fundref' do
   url_params = []
-  url_params += "q=#{URI.enode_www_form_component(params[:q])}" if params[:q]
-  url_params += "sort=#{URI.enode_www_form_component(params[:sort])}" if params[:sort]
-  url_params += "format=#{URI.enode_www_form_component(params[:format])}" if params[:format]
+  url_params += "q=#{URI.encode_www_form_component(params[:q])}" if params[:q]
+  url_params += "sort=#{URI.encode_www_form_component(params[:sort])}" if params[:sort]
+  url_params += "format=#{URI.encode_www_form_component(params[:format])}" if params[:format]
   
   url = '/funding'  
   url += "?{url_params.join('&')}" if not url_params.empty?
@@ -811,9 +811,9 @@ end
 
 get '/fundref.csv' do
   url_params = []
-  url_params += "q=#{URI.enode_www_form_component(params[:q])}" if params[:q]
-  url_params += "sort=#{URI.enode_www_form_component(params[:sort])}" if params[:sort]
-  url_params += "format=#{URI.enode_www_form_component(params[:format])}" if params[:format]
+  url_params += "q=#{URI.encode_www_form_component(params[:q])}" if params[:q]
+  url_params += "sort=#{URI.encode_www_form_component(params[:sort])}" if params[:sort]
+  url_params += "format=#{URI.encode_www_form_component(params[:format])}" if params[:format]
   
   url = '/funding.csv'  
   url += "?{url_params.join('&')}" if not url_params.empty?
