@@ -94,6 +94,9 @@ configure do
   # Orcid endpoint
   set :orcid_service, Faraday.new(:url => settings.orcid_site)
 
+  # Crossref API endpoint
+  set :api_service, Faraday.new(:url => 'http://api.crossref.org')
+
   # Orcid oauth2 object we can use to make API calls
   set :orcid_oauth, OAuth2::Client.new(settings.orcid_client_id,
                                        settings.orcid_client_secret,
@@ -529,13 +532,18 @@ helpers do
     plain_doi.start_with?('10.5555') || plain_doi.start_with?('10.55555')
   end
 
+  def funder_count
+    response = settings.api_service.get('/v1/funders?rows=0')
+    JSON.parse(response.body)['message']['total-results']
+  end
+
   def splash_stats
     loc = settings.solr_select
     {:dois =>
        settings.solr.get(loc, {:params => {:q => '*:*', :rows => 0}})['response']['numFound'],
      :funding_dois =>
        settings.solr.get(loc, {:params => {:q => 'funder_doi:[* TO *]', :rows => 0}})['response']['numFound'],
-     :funders => 11503}
+     :funders => funder_count()}
   end
 
   def index_stats
