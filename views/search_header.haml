@@ -75,7 +75,7 @@
         datumTokenizer: function(d) { return d.tokens; },
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote: {
-          url: 'http://api.crossref.org/funders?query=%QUERY',
+          url: 'https://api.crossref.org/funders?query=%QUERY',
           filter: function(dataResponse) { return dataResponse.message.items; }
         },
         limit: 16,
