@@ -20,7 +20,7 @@ module Session
     response = auth_token.get "#{session[:orcid][:uid]}/orcid-profile", :headers => {'Accept' => 'application/json'}
     if response.status == 200
       json = JSON.parse(response.body)
-      session[:orcid][:info][:name] = ''
+      session[:orcid][:info][:name] = session[:orcid][:uid] || ''
       begin
         given_name = json['orcid-profile']['orcid-bio']['personal-details']['given-names']['value']
         family_name = json['orcid-profile']['orcid-bio']['personal-details']['family-name']['value']
