@@ -8,7 +8,7 @@ module Doi
   end
 
   # Short DOIs are of the form 10/abcde. These must be used with
-  # dx.doi.org.
+  # doi.org.
   def short_doi? s
     to_doi(s) =~ /\A10\/[a-z0-9]+\Z/
   end
@@ -33,6 +33,11 @@ module Doi
     s.sub(/\A(https?:\/\/)?doi.org\//, '')
   end
 
+  def to_long_display_doi s
+    doi = to_doi(s)
+    "https://doi.org/#{doi}"
+  end
+
   def to_long_doi s
     doi = to_doi(s)
     normal_short_doi = doi.sub(/10\//, '').downcase
@@ -42,7 +47,7 @@ module Doi
     if short_doi_doc.has_next?
       short_doi_doc.next['doi']
     else
-      res = settings.dx_doi_org.get do |req|
+      res = settings.doi_org.get do |req|
         req.url "/10/#{normal_short_doi}"
         req.headers['Accept'] = JSON_TYPE
       end
