@@ -32,6 +32,11 @@ module Doi
     s = s.strip.sub(/\A(https?:\/\/)?dx\.doi\.org\//, '').sub(/\Adoi:/, '')
     s.sub(/\A(https?:\/\/)?doi.org\//, '')
   end
+
+  def to_long_display_doi s
+    doi = to_doi(s)
+    "https://doi.org/#{doi}"
+  end
   
   def to_long_doi s
     doi = to_doi(s)
