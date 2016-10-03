@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'cgi'
 
-require_relative 'doi'
-
 class SearchResult
 
   attr_accessor :year, :month, :day
@@ -43,9 +41,14 @@ class SearchResult
     end
   end
 
+  def to_long_display_doi s
+    doi = to_doi(s)
+    "https://doi.org/#{doi}"
+  end
+
   # Merge a mongo DOI record with solr highlight information.
   def initialize solr_doc, solr_result, citations, user_state
-    @doi = Doi::to_long_display_doi(solr_doc['doi'])
+    @doi = to_long_display_doi(solr_doc['doi'])
     @type = solr_doc['type']
     @doc = solr_doc
     @score = solr_doc['score']
