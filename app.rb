@@ -195,7 +195,7 @@ helpers do
   end
 
   def select query_params
-    page = query_page
+    page = [query_page, 10].max
     rows = query_rows
     results = settings.solr.paginate page, rows, settings.solr_select, :params => query_params
   end
