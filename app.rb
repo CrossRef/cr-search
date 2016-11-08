@@ -520,10 +520,10 @@ helpers do
   end
 
   def funder_doi_from_id id
-    dois = ["https://doi.org/10.13039/#{id}"]
+    dois = ["http://dx.doi.org/10.13039/#{id}"]
 
     dois += settings.funders.find_one({:id => id})['descendants'].map do |id|
-      "https://doi.org/10.13039/#{id}"
+      "http://dx.doi.org/10.13039/#{id}"
     end
   end
 
