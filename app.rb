@@ -238,9 +238,9 @@ helpers do
     query_info = query_type
     case query_info[:type]
     when :doi
-      "doi:\"https://doi.org/#{query_info[:value]}\""
+      "doi:\"http://dx.doi.org/#{query_info[:value]}\""
     when :short_doi
-      "doi:\"https://doi.org/#{query_info[:value]}\""
+      "doi:\"http://doi.org/#{query_info[:value]}\""
     when :issn
       "issn:\"http://id.crossref.org/issn/#{query_info[:value]}\""
     when :orcid
