@@ -62,13 +62,13 @@ configure do
   set :funders, settings.mongo[settings.mongo_db]['funders']
 
   # Set up for http requests to data.crossref.org and dx.doi.org
-  dx_doi_org = Faraday.new(:url => 'http://dx.doi.org') do |c|
+  doi_org = Faraday.new(:url => 'https://doi.org') do |c|
     c.use FaradayMiddleware::FollowRedirects, :limit => 5
     c.adapter :net_http
   end
 
   set :data_service, Faraday.new(:url => 'http://data.crossref.org')
-  set :dx_doi_org, dx_doi_org
+  set :doi_org, doi_org
 
   # Citation format types
   set :citation_formats, {
@@ -195,7 +195,7 @@ helpers do
   end
 
   def select query_params
-    page = [query_page, 10].max
+    page = [query_page, 10].min
     rows = query_rows
     results = settings.solr.paginate page, rows, settings.solr_select, :params => query_params
   end
@@ -238,9 +238,9 @@ helpers do
     query_info = query_type
     case query_info[:type]
     when :doi
-      "doi:\"http://dx.doi.org/#{query_info[:value]}\""
+      "doi:\"https://doi.org/#{query_info[:value]}\""
     when :short_doi
-      "doi:\"http://doi.org/#{query_info[:value]}\""
+      "doi:\"https://doi.org/#{query_info[:value]}\""
     when :issn
       "issn:\"http://id.crossref.org/issn/#{query_info[:value]}\""
     when :orcid
@@ -520,10 +520,10 @@ helpers do
   end
 
   def funder_doi_from_id id
-    dois = ["http://dx.doi.org/10.13039/#{id}"]
+    dois = ["https://doi.org/10.13039/#{id}"]
 
     dois += settings.funders.find_one({:id => id})['descendants'].map do |id|
-      "http://dx.doi.org/10.13039/#{id}"
+      "https://doi.org/10.13039/#{id}"
     end
   end
 

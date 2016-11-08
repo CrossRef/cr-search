@@ -22,7 +22,7 @@ class Paginate
   end
 
   def total_pages
-    [(@response['numFound'] / per_page.to_f).ceil, 10].max
+    [(@response['numFound'] / per_page.to_f).ceil, 10].min
   end
 
   def total_rows
