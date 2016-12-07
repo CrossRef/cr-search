@@ -189,7 +189,7 @@ $(document).ready(function() {
     }
     
     if (isDoi(searchText)) {
-      var url = 'http://dx.doi.org/' + normaliseDoi(searchText);
+      var url = 'https://doi.org/' + normaliseDoi(searchText);
       window.location.href = url;
     } else {
       var url = '/dois?q=';
