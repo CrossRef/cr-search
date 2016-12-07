@@ -1319,7 +1319,7 @@ end
 
 get '/auth/orcid/callback' do
   session[:orcid] = request.env['omniauth.auth']
-  Resque.enqueue(OrcidUpdate, session_info)
+  OrcidUpdate.perform(session_info)
   update_profile
   haml :auth_callback
 end
