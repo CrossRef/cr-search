@@ -458,7 +458,7 @@ helpers do
   end
 
   def scrub_query query_str, remove_short_operators
-    query_str = query_str.gsub(/[{}*\"\.\[\]\(\)\-:;\/%^&]/, ' ')
+    query_str = query_str.gsub(/[~{}*\"\.\[\]\(\)\-:;\/%^&]/, ' ')
     query_str = query_str.gsub(/[\+\!\-]/, ' ') if remove_short_operators
     query_str = query_str.gsub(/AND/, ' ')
     query_str = query_str.gsub(/OR/, ' ')
