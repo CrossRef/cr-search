@@ -73,7 +73,7 @@
     - name = n.to_s
     - values = page[:facets][name]
     .mini-page-header
-      %h6= name.gsub(/_/, ' ')
+      %h6= name.gsub(/_str/, '').gsub(/_/, ' ')
     %ul.nav.nav-list
       - values.take(20).each_slice(2) do |value_name, value_count|
         - unless value_count.zero?

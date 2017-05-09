@@ -84,10 +84,10 @@ configure do
   }
 
   # Set facet fields
-  set :facet_fields, ['type', 'year', 'publication', 'category', 'publisher', 'funder_name', 'source']
-  set :crmds_facet_fields, ['type', 'year', 'publication', 'category', 'publisher', 'funder_name', 'source']
-  set :fundref_facet_fields, ['type', 'year', 'publication', 'category', 'publisher', 'source']
-  set :chorus_facet_fields, ['category', 'type', 'year', 'publication', 'publisher', 'source']
+  set :facet_fields, ['type', 'year', 'publication', 'category', 'publisher_str', 'funder_name', 'source']
+  set :crmds_facet_fields, ['type', 'year', 'publication', 'category', 'publisher_str', 'funder_name', 'source']
+  set :fundref_facet_fields, ['type', 'year', 'publication', 'category', 'publisher_str', 'source']
+  set :chorus_facet_fields, ['category', 'type', 'year', 'publication', 'publisher_str', 'source']
 
   # Google analytics event tracking
   set :ga, Gabba::Gabba.new('UA-34536574-2', 'http://search.labs.crossref.org')
