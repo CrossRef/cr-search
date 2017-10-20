@@ -11,7 +11,7 @@ class OrcidClaim
 
   @queue = :orcid
 
-  ORCID_VERSION = '1.2'
+  ORCID_VERSION = '2.0'
 
   def initialize oauth, work
     @oauth = oauth
@@ -36,9 +36,9 @@ class OrcidClaim
       opts = {:site => @conf['orcid_site']}
       client = OAuth2::Client.new(@conf['orcid_client_id'], @conf['orcid_client_secret'], opts)
       token = OAuth2::AccessToken.new(client, @oauth['credentials']['token'])
-      headers = {'Accept' => 'application/json'}
-      response = token.post("#{@conf['orcid_site']}/v#{ORCID_VERSION}/#{uid}/orcid-works") do |post|
-        post.headers['Content-Type'] = 'application/orcid+xml'
+      headers = {'Accept' => 'application/vnd.json+xml'}
+      response = token.post("#{@conf['orcid_site']}/v#{ORCID_VERSION}/#{uid}/work") do |post|
+        post.headers['Content-Type'] = 'application/vnd.orcid+xml'
         post.body = to_xml
       end
       #$stderr.puts response
@@ -94,20 +94,19 @@ class OrcidClaim
     uri.strip.sub(/\Ahttp:\/\/id.crossref.org\/isbn\//, '')
   end
 
-  def insert_id xml, type, value
-    xml.send(:'work-external-identifier') {
-      xml.send(:'work-external-identifier-type', type)
-      xml.send(:'work-external-identifier-id', value)
+  def insert_id xml, type, value, rel
+    xml['common'].send(:'external-id') {
+      xml['common'].send(:'external-id-type', type)
+      xml['common'].send(:'external-id-value', value)
+      xml['common'].send(:'external-id-relationship', rel)
     }
   end
 
   def insert_ids xml
-     xml.send(:'work-external-identifiers') {
-       insert_id(xml, 'doi', to_doi(@work['doi_key']))
-       # Do not insert ISSNs and ISBNs as currently they are treated
-       # as unique per work by ORCID
-       #insert_id(xml, 'isbn', to_isbn(@work['isbn'].first)) if @work['isbn'] && !@work['isbn'].empty?
-       #insert_id(xml, 'issn', to_issn(@work['issn'].first)) if @work['issn'] && !@work['issn'].empty?
+     xml['common'].send(:'external-ids') {
+       insert_id(xml, 'doi', to_doi(@work['doi_key']), 'self')
+       insert_id(xml, 'isbn', to_isbn(@work['isbn'].first), 'part-of') if @work['isbn'] && !@work['isbn'].empty?
+       insert_id(xml, 'issn', to_issn(@work['issn'].first), 'part-of') if @work['issn'] && !@work['issn'].empty?
     }
   end
 
@@ -115,16 +114,16 @@ class OrcidClaim
     month_str = pad_date_item(@work['month'])
     day_str = pad_date_item(@work['day'])
     if @work['hl_year']
-      xml.send(:'publication-date') {
-        xml.year(@work['hl_year'].to_i.to_s)
-        xml.month(month_str) if month_str
-        xml.day(day_str) if month_str && day_str
+      xml['common'].send(:'publication-date') {
+        xml['common'].year(@work['hl_year'].to_i.to_s)
+        xml['common'].month(month_str) if month_str
+        xml['common'].day(day_str) if month_str && day_str
       }
     end
   end
 
   def insert_type xml
-    xml.send(:'work-type', orcid_work_type(@work['type']))
+    xml['work'].type orcid_work_type(@work['type'])
   end
 
   def insert_titles xml
@@ -134,12 +133,12 @@ class OrcidClaim
     end
 
     if subtitle || @work['hl_title']
-      xml.send(:'work-title') {
+      xml['work'].title {
         if @work['hl_title'] && !@work['hl_title'].empty?
-          xml.title(without_control(@work['hl_title'].first))
+          xml['common'].title(without_control(@work['hl_title'].first))
         end
         if subtitle
-          xml.subtitle(without_control(subtitle))
+          xml['common'].subtitle(without_control(subtitle))
         end
       }
     end
@@ -150,19 +149,19 @@ class OrcidClaim
     end
 
     if container_title
-      xml.send(:'journal-title', container_title)
+      xml['work'].send(:'journal-title', container_title)
     end
   end
 
   def insert_contributors xml
-    xml.send(:'work-contributors') {
-      ['author', 'editor'].each do |t|
+    xml['work'].contributors {
+      ['author', 'editor'].each do |role|
         if !@work["hl_#{t}s"].nil?
           @work["hl_#{t}s"].split(',').each do |c|
-            xml.contributor {
-              xml.send(:'credit-name', c.strip())
-              xml.send(:'contributor-attributes') {
-                xml.send(:'contributor-role', t)
+            xml['work'].contributor {
+              xml['work'].send(:'credit-name', c.strip())
+              xml['work'].send(:'contributor-attributes') {
+                xml['work'].send(:'contributor-role', role)
               }
             }
           end
@@ -178,9 +177,9 @@ class OrcidClaim
     }
 
     if response.status == 200
-      xml.send(:'work-citation') {
-        xml.send(:'work-citation-type', 'bibtex')
-        xml.citation(without_control(response.body))
+      xml['work'].citation {
+        xml['work'].send(:'citation-type', 'bibtex')
+        xml['work'].send(:'citation-value', (without_control(response.body)))
       }
     end
   end
@@ -196,29 +195,22 @@ class OrcidClaim
   end
 
   def to_xml
-    root_attributes = {
-      :'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-      :'xsi:schemaLocation' => 'http://www.orcid.org/ns/orcid https://raw.github.com/ORCID/ORCID-Source/master/orcid-model/src/main/resources/orcid-message-1.2.xsd',
-      :'xmlns' => 'http://www.orcid.org/ns/orcid'
-    }
+    root_attributes =
+      {
+       :'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+       :'xmlns:common' => 'http://www.orcid.org/ns/common',
+       :'xmlns:work' => 'http://www.orcid.org/ns/work'
+       :'xsi:schemaLocation' => 'http://www.orcid.org/ns/work /work-2.0.xsd',
+      }
 
     Nokogiri::XML::Builder.new do |xml|
-      xml.send(:'orcid-message', root_attributes) {
-        xml.send(:'message-version', ORCID_VERSION)
-        xml.send(:'orcid-profile') {
-          xml.send(:'orcid-activities') {
-            xml.send(:'orcid-works') {
-              xml.send(:'orcid-work') {
-                insert_titles(xml)
-                insert_citation(xml)
-                insert_type(xml)
-                insert_pub_date(xml)
-                insert_ids(xml)
-                insert_contributors(xml)
-              }
-            }
-          }
-        }
+      xml['work'].work(root_attributes) {
+        insert_titles(xml)
+        insert_citation(xml)
+        insert_type(xml)
+        insert_pub_date(xml)
+        insert_ids(xml)
+        insert_contributors(xml)
       }
     end.to_xml
   end

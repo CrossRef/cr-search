@@ -5,7 +5,7 @@ module OmniAuth
     class Orcid < OmniAuth::Strategies::OAuth2
 
       option :client_options, {
-        :scope => '/orcid-profile/read-limited /orcid-works/create',
+        :scope => '/read-limited /activities/update',
         :response_type => 'code',
         :mode => :header
       }
@@ -19,7 +19,7 @@ module OmniAuth
         # Trick shamelessly borrowed from the omniauth-facebook gem!
         super.tap do |params|
           %w[scope].each { |v| params[v.to_sym] = request.params[v] if request.params[v] }
-          params[:scope] ||= '/orcid-profile/read-limited /orcid-works/create' 
+          params[:scope] ||= '/read-limited /activities/update' 
           # ensure that we're always request *some* default scope
         end
       end
