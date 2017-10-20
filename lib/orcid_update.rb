@@ -8,6 +8,8 @@ class OrcidUpdate
 
   @queue = :orcid
 
+  ORCID_VERSION = '2.0'
+
   def initialize oauth
     @oauth = oauth
   end
@@ -28,8 +30,8 @@ class OrcidUpdate
       opts = {:site => @conf['orcid_site']}
       client = OAuth2::Client.new(@conf['orcid_client_id'], @conf['orcid_client_secret'], opts)
       token = OAuth2::AccessToken.new(client, @oauth['credentials']['token'])
-      headers = {'Accept' => 'application/json'}
-      response = token.get "#{@conf['orcid_site']}/#{uid}/orcid-works", {:headers => headers}
+      headers = {'Accept' => 'application/vnd.orcid+json'}
+      response = token.get "#{@conf['orcid_site']}/v#{ORCID_VERSION}/#{uid}/works", {:headers => headers}
 
       if response.status == 200
         response_json = JSON.parse(response.body)
@@ -68,19 +70,19 @@ class OrcidUpdate
   end
 
   def parse_dois json
-    if !has_path?(json, ['orcid-profile', 'orcid-activities', 'orcid-works'])
+    if !has_path?(json, ['group'])
       []
     else
-      works = json['orcid-profile']['orcid-activities']['orcid-works']['orcid-work']
-
+      works = json['group']
+      
       extracted_dois = works.map do |work_loc|
         doi = nil
-        if has_path?(work_loc, ['work-external-identifiers', 'work-external-identifier'])
-          ids_loc = work_loc['work-external-identifiers']['work-external-identifier']
+        if has_path?(work_loc, ['external-ids', 'external-id'])
+          ids_loc = work_loc['external-ids']['external-id']
 
           ids_loc.each do |id_loc|
-            id_type = id_loc['work-external-identifier-type']
-            id_val = id_loc['work-external-identifier-id']['value']
+            id_type = id_loc['external-id-type']
+            id_val = id_loc['external-id-url']
 
             if id_type.upcase == 'DOI'
               doi = id_val

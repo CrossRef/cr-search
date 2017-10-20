@@ -1,6 +1,9 @@
 require 'json'
 
 module Session
+
+  ORCID_VERSION = '2.0'
+  
   def auth_token
     OAuth2::AccessToken.new settings.orcid_oauth, session[:orcid]['credentials']['token']
   end
@@ -17,13 +20,13 @@ module Session
   end
 
   def update_profile
-    response = auth_token.get "#{session[:orcid][:uid]}/orcid-profile", :headers => {'Accept' => 'application/json'}
+    response = auth_token.get "/v#{ORCID_VERSION}/#{session[:orcid][:uid]}/person", :headers => {'Accept' => 'application/vnd.orcid+json'}
     if response.status == 200
       json = JSON.parse(response.body)
       session[:orcid][:info][:name] = session[:orcid][:uid] || ''
       begin
-        given_name = json['orcid-profile']['orcid-bio']['personal-details']['given-names']['value']
-        family_name = json['orcid-profile']['orcid-bio']['personal-details']['family-name']['value']
+        given_name = json['name']['given-names']['value']
+        family_name = json['name']['family-name']['value']
         session[:orcid][:info][:name] = "#{given_name} #{family_name}"
       rescue
       end
