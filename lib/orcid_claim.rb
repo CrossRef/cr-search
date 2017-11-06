@@ -199,7 +199,7 @@ class OrcidClaim
       {
        :'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
        :'xmlns:common' => 'http://www.orcid.org/ns/common',
-       :'xmlns:work' => 'http://www.orcid.org/ns/work'
+       :'xmlns:work' => 'http://www.orcid.org/ns/work',
        :'xsi:schemaLocation' => 'http://www.orcid.org/ns/work /work-2.0.xsd',
       }
 
