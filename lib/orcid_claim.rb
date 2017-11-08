@@ -33,7 +33,7 @@ class OrcidClaim
 
       #$stderr.puts to_xml
 
-      opts = {:site => @conf['orcid_site']}
+      opts = {:site => @conf['orcid_site'], :redirect_uri => @conf['orcid_redirect_uri']}
       client = OAuth2::Client.new(@conf['orcid_client_id'], @conf['orcid_client_secret'], opts)
       token = OAuth2::AccessToken.new(client, @oauth['credentials']['token'])
       headers = {'Accept' => 'application/vnd.json+xml'}

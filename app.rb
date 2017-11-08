@@ -101,13 +101,14 @@ configure do
   # Orcid oauth2 object we can use to make API calls
   set :orcid_oauth, OAuth2::Client.new(settings.orcid_client_id,
                                        settings.orcid_client_secret,
-                                       {:site => settings.orcid_site})
+                                       {:site => settings.orcid_site,
+                                        :redirect_uri => settings.orcid_redirect_uri})
 
   # Set up session and auth middlewares for ORCiD sign in
   use Rack::Session::Mongo, settings.mongo[settings.mongo_db]
 
   use OmniAuth::Builder do
-    provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, :member => true, :redirect_uri => settings.orcid_redirect_uri
+    provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, {:member => true, :redirect_uri => settings.orcid_redirect_uri}
   end
   
   # use OmniAuth::Builder do
