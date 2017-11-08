@@ -107,7 +107,7 @@ configure do
   use Rack::Session::Mongo, settings.mongo[settings.mongo_db]
 
   use OmniAuth::Builder do
-    provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, :member => true
+    provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, :member => true, :redirect_uri => settings.orcid_redirect_uri
   end
   
   # use OmniAuth::Builder do
