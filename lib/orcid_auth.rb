@@ -25,6 +25,10 @@ module OmniAuth
 
       info do {} end
 
+      def callback_url
+        full_host + script_name + callback_path
+      end
+
       # Customize the parameters passed to the OAuth provider in the authorization phase
       def authorize_params
         # Trick shamelessly borrowed from the omniauth-facebook gem!
