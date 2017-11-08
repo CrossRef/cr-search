@@ -4,6 +4,16 @@ module OmniAuth
   module Strategies
     class Orcid < OmniAuth::Strategies::OAuth2
 
+      def load_config
+        @conf ||= {}
+        config = JSON.parse(File.open('conf/app.json').read)
+        config.each_pair do |key, value|
+          @conf[key] = value
+        end
+      end
+
+      load_config
+
       option :client_options, {
         :scope => '/read-limited /activities/update',
         :response_type => 'code',
@@ -13,6 +23,8 @@ module OmniAuth
       uid { access_token.params["orcid"] }
 
       info do {} end
+
+      callback_url { @conf['orcid_redirect_uri'] }
 
       # Customize the parameters passed to the OAuth provider in the authorization phase
       def authorize_params
