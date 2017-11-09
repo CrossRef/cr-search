@@ -82,7 +82,7 @@ class OrcidUpdate
 
           ids_loc.each do |id_loc|
             id_type = id_loc['external-id-type']
-            id_val = id_loc['external-id-url']
+            id_val = id_loc['external-id-value']
 
             if id_type.upcase == 'DOI'
               doi = id_val
