@@ -117,7 +117,7 @@ configure do
               :redirect_uri => settings.orcid_redirect_uri,
               :authorize_url => settings.orcid_authorize_url,
               :token_url => settings.orcid_token_url,
-              :scope => '/orcid-profile/read-limited /orcid-works/create'
+              :scope => '/read-limited /activities/update'
    }
   end
 

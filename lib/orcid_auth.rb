@@ -3,18 +3,11 @@ require 'omniauth-oauth2'
 module OmniAuth
   module Strategies
     class Orcid < OmniAuth::Strategies::OAuth2
-
-      @conf ||= {}
-      config = JSON.parse(File.open('conf/app.json').read)
-      config.each_pair do |key, value|
-        @conf[key] = value
-      end
-
+      
       option :client_options, {
         :scope => '/read-limited /activities/update',
         :response_type => 'code',
-        :mode => :header,
-        :redirect_uri => @conf['orcid_redirect_uri']
+        :mode => :header
       }
 
       uid { access_token.params["orcid"] }
@@ -34,7 +27,7 @@ module OmniAuth
           params[:scope] ||= '/read-limited /activities/update' 
           # ensure that we're always request *some* default scope
 
-          params[:redirect_uri] = @conf['orcid_redirect_uri']
+          params[:redirect_uri] = client_options[:redirect_uri]
         end
       end
     end
