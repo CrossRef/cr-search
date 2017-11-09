@@ -15,7 +15,7 @@ module OmniAuth
       info do {} end
 
       def callback_url
-        client_options[:redirect_uri]
+        options[:client_options][:redirect_uri]
       end
 
       # Customize the parameters passed to the OAuth provider in the authorization phase
@@ -26,7 +26,7 @@ module OmniAuth
           params[:scope] ||= '/read-limited /activities/update' 
           # ensure that we're always request *some* default scope
 
-          params[:redirect_uri] = client_options[:redirect_uri]
+          params[:redirect_uri] = options[:client_options][:redirect_uri]
         end
       end
     end
