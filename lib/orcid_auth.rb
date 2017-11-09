@@ -4,15 +4,11 @@ module OmniAuth
   module Strategies
     class Orcid < OmniAuth::Strategies::OAuth2
 
-      def load_config
-        @conf ||= {}
-        config = JSON.parse(File.open('conf/app.json').read)
-        config.each_pair do |key, value|
-          @conf[key] = value
-        end
+      @conf ||= {}
+      config = JSON.parse(File.open('conf/app.json').read)
+      config.each_pair do |key, value|
+        @conf[key] = value
       end
-
-      load_config
 
       option :client_options, {
         :scope => '/read-limited /activities/update',
