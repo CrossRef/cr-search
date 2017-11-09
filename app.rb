@@ -12,7 +12,7 @@ require 'haml'
 require 'gabba'
 require 'rack-session-mongo'
 # require 'oauth2'
-require 'omniauth-orcid'
+# require 'omniauth-orcid'
 require 'resque'
 require 'open-uri'
 require 'uri'
@@ -28,7 +28,7 @@ require_relative 'lib/session'
 require_relative 'lib/data'
 require_relative 'lib/orcid_update'
 require_relative 'lib/orcid_claim'
-# require_relative 'lib/orcid_auth'
+require_relative 'lib/orcid_auth'
 
 MIN_MATCH_SCORE = 2
 MIN_MATCH_TERMS = 3
@@ -107,18 +107,19 @@ configure do
   # Set up session and auth middlewares for ORCiD sign in
   use Rack::Session::Mongo, settings.mongo[settings.mongo_db]
 
-  use OmniAuth::Builder do
-    provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, {:member => true, :redirect_uri => settings.orcid_redirect_uri}
-  end
-  
   # use OmniAuth::Builder do
-  #  provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, :client_options => {
-  #    :site => settings.orcid_site,
-  #    :authorize_url => settings.orcid_authorize_url,
-  #    :token_url => settings.orcid_token_url,
-  #    :scope => '/orcid-profile/read-limited /orcid-works/create'
-  #  }
+  #   provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, {:member => true, :redirect_uri => settings.orcid_redirect_uri}
   # end
+  
+  use OmniAuth::Builder do
+   provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, :client_options => {
+              :site => settings.orcid_site,
+              :redirect_uri => settings.orcid_redirect_uri,
+              :authorize_url => settings.orcid_authorize_url,
+              :token_url => settings.orcid_token_url,
+              :scope => '/orcid-profile/read-limited /orcid-works/create'
+   }
+  end
 
   # Branding options
   set :crmds_branding, {

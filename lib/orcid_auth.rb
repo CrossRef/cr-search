@@ -37,6 +37,8 @@ module OmniAuth
           %w[scope].each { |v| params[v.to_sym] = request.params[v] if request.params[v] }
           params[:scope] ||= '/read-limited /activities/update' 
           # ensure that we're always request *some* default scope
+
+          params[:redirect_uri] = @conf['orcid_redirect_uri']
         end
       end
     end
