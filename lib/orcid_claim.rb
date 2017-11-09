@@ -156,8 +156,8 @@ class OrcidClaim
   def insert_contributors xml
     xml['work'].contributors {
       ['author', 'editor'].each do |role|
-        if !@work["hl_#{t}s"].nil?
-          @work["hl_#{t}s"].split(',').each do |c|
+        if !@work["hl_#{role}s"].nil?
+          @work["hl_#{role}s"].split(',').each do |c|
             xml['work'].contributor {
               xml['work'].send(:'credit-name', c.strip())
               xml['work'].send(:'contributor-attributes') {
