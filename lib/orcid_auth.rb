@@ -26,7 +26,8 @@ module OmniAuth
       info do {} end
 
       def callback_url
-        full_host + script_name + callback_path
+        puts @conf['orcid_redirect_uri']
+        @conf['orcid_redirect_uri']
       end
 
       # Customize the parameters passed to the OAuth provider in the authorization phase
