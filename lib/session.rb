@@ -9,7 +9,8 @@ module Session
   end
 
   def make_and_set_token code, redirect
-    token_obj = settings.orcid_oauth.auth_code.get_token(code, {:redirect_uri => redirect})
+    token_obj = settings.orcid_oauth.auth_code.get_token(code, {:redirect_uri => redirect,
+                                                                :scope => '/read-limited /activities/update'})
     session[:orcid] = {
       'credentials' => {
         'token' => token_obj.token
