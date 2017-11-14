@@ -101,8 +101,7 @@ configure do
   # Orcid oauth2 object we can use to make API calls
   set :orcid_oauth, OAuth2::Client.new(settings.orcid_client_id,
                                        settings.orcid_client_secret,
-                                       {:site => settings.orcid_site,
-                                        :redirect_uri => settings.orcid_redirect_uri})
+                                       {:site => settings.orcid_site})
 
   # Set up session and auth middlewares for ORCiD sign in
   use Rack::Session::Mongo, settings.mongo[settings.mongo_db]
