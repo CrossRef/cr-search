@@ -168,7 +168,7 @@ function refreshAdvForm() {
 function makeFieldQuery() {
   var fields = $('#adv-search-expander').data('form');
   
-  var url = 'http://www.crossref.org/openurl/?';
+  var url = 'https://www.crossref.org/openurl/?';
   url += 'noredirect=true&pid=kward@crossref.org&format=unixref';
 
   $.each(fields, function(i, field) {

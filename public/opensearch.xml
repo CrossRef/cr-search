@@ -4,7 +4,7 @@
   <Description>Search Metadata of over 50 million journal articles, conference proceedings and books</Description>
   <Contact>kward@crossref.org</Contact>
   <Url type="text/html"
-       template="http://search.labs.crossref.org/?q={searchTerms}&amp;page={startPage?}"/>
+       template="https://search.crossref.org/?q={searchTerms}&amp;page={startPage?}"/>
   <Developer>Crossref Labs</Developer>
   <Attribution>CC by-nc 2.5.</Attribution>
   <SyndicationRight>open</SyndicationRight>

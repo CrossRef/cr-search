@@ -125,14 +125,14 @@
             %a{:href => '/funding'} Funding Data
             %a{:href => '/references'} Link References
             %a{:href => '/help/status'} Status
-            %a{:href => 'http://api.crossref.org'} API
+            %a{:href => 'https://api.crossref.org'} API
             %a{:href => '/help/search'} Help
           - elsif page[:branding][:header_links_profile] == :chorus
-            %a{:href => 'http://chorusaccess.org'} CHORUS
+            %a{:href => 'https://chorusaccess.org'} CHORUS
           - else
             %a{:href => '/help/search'} Help  
             %a{:href => '/help/status'} Status
-            %a{:href => 'http://api.crossref.org'} API
+            %a{:href => 'https://api.crossref.org'} API
     - unless page[:disable_search_box]
       %form#search-form{:method => 'GET', :action => page[:branding][:search_action]}
         .search-in-header

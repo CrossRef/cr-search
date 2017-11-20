@@ -9,7 +9,6 @@ require 'cgi'
 require 'faraday'
 require 'faraday_middleware'
 require 'haml'
-require 'gabba'
 require 'rack-session-mongo'
 # require 'oauth2'
 # require 'omniauth-orcid'
@@ -68,7 +67,7 @@ configure do
     c.adapter :net_http
   end
 
-  set :data_service, Faraday.new(:url => 'http://data.crossref.org')
+  set :data_service, Faraday.new(:url => 'https://data.crossref.org')
   set :doi_org, doi_org
 
   # Citation format types
@@ -89,14 +88,11 @@ configure do
   set :fundref_facet_fields, ['type', 'year', 'publication', 'category', 'publisher_str', 'source']
   set :chorus_facet_fields, ['category', 'type', 'year', 'publication', 'publisher_str', 'source']
 
-  # Google analytics event tracking
-  set :ga, Gabba::Gabba.new('UA-34536574-2', 'http://search.labs.crossref.org')
-
   # Orcid endpoint
   set :orcid_service, Faraday.new(:url => settings.orcid_site)
 
   # Crossref API endpoint
-  set :api_service, Faraday.new(:url => 'http://api.crossref.org')
+  set :api_service, Faraday.new(:url => 'https://api.crossref.org')
 
   # Orcid oauth2 object we can use to make API calls
   set :orcid_oauth, OAuth2::Client.new(settings.orcid_client_id,
@@ -122,8 +118,8 @@ configure do
 
   # Branding options
   set :crmds_branding, {
-    :logo_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-200.png',
-    :logo_small_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-100.png',
+    :logo_path => '//assets.crossref.org/logo/crossref-logo-landscape-200.png',
+    :logo_small_path => '//assets.crossref.org/logo/crossref-logo-landscape-100.png',
     :logo_link => '/',
     :search_placeholder => 'Title, author, DOI, ORCID iD, etc.',
     :search_action => '/',
@@ -137,8 +133,8 @@ configure do
   }
 
   set :fundref_branding, {
-    :logo_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-200.png',
-    :logo_small_path => 'http://assets.crossref.org/logo/crossref-logo-landscape-100.png',
+    :logo_path => '//assets.crossref.org/logo/crossref-logo-landscape-200.png',
+    :logo_small_path => '//assets.crossref.org/logo/crossref-logo-landscape-100.png',
     :logo_link => '/funding',
     :search_placeholder => 'Search funders...',
     :search_action => '/funding',
@@ -193,7 +189,7 @@ helpers do
 
       if citation['from']['authority'] == 'cambia'
         patent = settings.patents.find_one({:patent_key => citation['from']['id']})
-        hsh[:url] = "http://lens.org/lens/patent/#{patent['pub_key']}"
+        hsh[:url] = "https://lens.org/lens/patent/#{patent['pub_key']}"
         hsh[:title] = patent['title']
       end
 
@@ -1260,7 +1256,6 @@ get '/orcid/sync' do
 end
 
 get '/dois' do
-  settings.ga.event('API', '/dois', query_terms, nil, true)
   solr_result = select(search_query)
   items = search_results(solr_result).map do |result|
     {
@@ -1298,8 +1293,6 @@ post '/links' do
   citation_texts = JSON.parse(request.env['rack.input'].read)
   page = resolve_references(citation_texts)
 
-  settings.ga.event('API', '/links', nil, page[:results].count, true)
-
   content_type 'application/json'
   JSON.pretty_generate(page)
 end
@@ -1311,8 +1304,6 @@ get '/citation' do
     req.url "/#{params[:doi]}"
     req.headers['Accept'] = citation_format
   end
-
-  settings.ga.event('Citations', '/citation', citation_format, nil, true)
 
   content_type citation_format
   res.body if res.success?

@@ -172,7 +172,7 @@ class OrcidClaim
 
   def insert_citation xml
     conn = Faraday.new
-    response = conn.get "http://data.crossref.org/#{URI.encode(to_doi(@work['doi_key']))}", {}, {
+    response = conn.get "https://data.crossref.org/#{URI.encode(to_doi(@work['doi_key']))}", {}, {
       'Accept' => 'application/x-bibtex'
     }
 
