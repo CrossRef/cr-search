@@ -10,6 +10,7 @@ require 'faraday'
 require 'faraday_middleware'
 require 'haml'
 require 'rack-session-mongo'
+require 'serrano'
 # require 'oauth2'
 # require 'omniauth-orcid'
 require 'resque'
@@ -17,7 +18,7 @@ require 'open-uri'
 require 'uri'
 require 'csv'
 require 'parallel'
-
+require 'pry'
 require_relative 'lib/paginate'
 require_relative 'lib/result'
 require_relative 'lib/bootstrap'
@@ -42,12 +43,15 @@ configure do
   config.each_pair do |key, value|
     set key.to_sym, value
   end
-
+  Serrano.configuration do |config|
+    config.base_url = settings.api_url
+    #config.mailto = settings.api_contact
+  end
   # Work around rack protection referrer bug
   set :protection, :except => :json_csrf
 
   # Configure solr
-  set :solr, RSolr.connect(:url => settings.solr_url)
+  set :solr, Serrano.base_url
 
   # Configure mongo
   set :mongo, Mongo::Connection.new(settings.mongo_host)
@@ -105,11 +109,11 @@ configure do
   # use OmniAuth::Builder do
   #   provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, {:member => true, :redirect_uri => settings.orcid_redirect_uri}
   # end
-  
+
   use OmniAuth::Builder do
    provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, :client_options => {
               :site => settings.orcid_site,
-              :redirect_uri => settings.orcid_redirect_uri,
+              #:redirect_uri => settings.orcid_redirect_uri,
               :authorize_url => settings.orcid_authorize_url,
               :token_url => settings.orcid_token_url,
               :scope => '/read-limited /activities/update'
@@ -160,9 +164,9 @@ configure do
     :downloads => [:fundref_csv],
     :show_doaj_label => false,
     :show_profile_link => false,
-    :filter_prefixes => ['10.1103', '10.1021', '10.1063', '10.1016', 
+    :filter_prefixes => ['10.1103', '10.1021', '10.1063', '10.1016',
                          '10.1093', '10.1109', '10.1002', '10.1126']
-  } 
+  }
 
   set :test_prefixes, ["10.5555", "10.55555"]
 end
@@ -198,18 +202,21 @@ helpers do
   end
 
   def select query_params
+
     page = [query_page, 10].min
     rows = query_rows
     results = settings.solr.paginate page, rows, settings.solr_select, :params => query_params
   end
 
   def select_all query_params
+
     query_params[:rows] = 60000000
     query_params[:page] = 0
     results = settings.solr.get settings.solr_select, :params => query_params
   end
 
   def response_format
+    binding.pry
     if params.has_key?('format') && params['format'] == 'json'
       'json'
     else
@@ -322,7 +329,7 @@ helpers do
     fq = facet_query
     query['fq'] = fq unless fq.empty?
     query
-  end 
+  end
 
   def search_query
     terms = query_terms || '*:*'
@@ -343,7 +350,7 @@ helpers do
       prefix_q = prefixes.map {|prefix| "owner_prefix:\"#{prefix}\""}.join(' OR ')
       query[:q] = "(#{query[:q]}) AND (#{prefix_q})"
     end
-      
+
     fq = facet_query
     query['fq'] = fq unless fq.empty?
     query
@@ -495,7 +502,7 @@ helpers do
 
   def render_funders_full_children indent, current_id, children_map, names, &block
     block.call(indent, current_id, names[current_id])
-    
+
     if !children_map[current_id].nil?
       children_map[current_id].each do |c|
         render_funders_full_children(indent + 1, c[:id], children_map, names, &block)
@@ -541,12 +548,13 @@ helpers do
   end
 
   def splash_stats
-    loc = settings.solr_select
-    {:dois =>
-       settings.solr.get(loc, {:params => {:q => '*:*', :rows => 0}})['response']['numFound'],
-     :funding_dois =>
-       settings.solr.get(loc, {:params => {:q => 'funder_doi:[* TO *]', :rows => 0}})['response']['numFound'],
-     :funders => funder_count()}
+    works = Serrano.works
+    doi_num = works["message"]["total-results"]
+    funders = Serrano.funders
+    f_count = funders["message"]["total-results"]
+    {:dois => doi_num,
+     :funding_dois => 20,
+     :funders => f_count}
   end
 
   def index_stats
@@ -584,9 +592,9 @@ helpers do
       :q => 'orcid:[* TO *]',
       :rows => 0
     }
-    
-    book_types = ['Book', 'Book Series', 'Book Set', 'Reference', 
-                  'Monograph', 'Chapter', 'Section', 
+
+    book_types = ['Book', 'Book Series', 'Book Set', 'Reference',
+                  'Monograph', 'Chapter', 'Section',
                   'Part', 'Track', 'Entry']
 
     book_result = settings.solr.get loc, :params => {
@@ -699,9 +707,9 @@ helpers do
       csv_response = CSV.generate do |csv|
         csv << ['DOI', 'Type', 'Year', 'Title', 'Publication', 'Authors', 'Funders', 'Awards']
         results.each do |result|
-          csv << [result.doi, 
+          csv << [result.doi,
                   result.type,
-                  result.coins_year, 
+                  result.coins_year,
                   result.coins_atitle,
                   result.coins_title,
                   result.coins_authors,
@@ -718,7 +726,7 @@ helpers do
       solr_result = select(fundref_doi_query(funder_dois, prefixes))
       funder = settings.funders.find_one({:uri => funder_dois.first})
       funder_info = {
-        :nesting => funder['nesting'], 
+        :nesting => funder['nesting'],
         :nesting_names => funder['nesting_names'],
         :id => funder['id']
       }
@@ -814,8 +822,8 @@ get '/fundref' do
   url_params << "q=#{URI.encode_www_form_component(params[:q])}" if params[:q]
   url_params << "sort=#{URI.encode_www_form_component(params[:sort])}" if params[:sort]
   url_params << "format=#{URI.encode_www_form_component(params[:format])}" if params[:format]
-  
-  url = '/funding'  
+
+  url = '/funding'
   url += "?#{url_params.join('&')}" if not url_params.empty?
   redirect url
 end
@@ -825,8 +833,8 @@ get '/fundref.csv' do
   url_params << "q=#{URI.encode_www_form_component(params[:q])}" if params[:q]
   url_params << "sort=#{URI.encode_www_form_component(params[:sort])}" if params[:sort]
   url_params << "format=#{URI.encode_www_form_component(params[:format])}" if params[:format]
-  
-  url = '/funding.csv'  
+
+  url = '/funding.csv'
   url += "?#{url_params.join('&')}" if not url_params.empty?
   redirect url
 end
@@ -846,19 +854,19 @@ end
 get '/funders/:id/dois' do
   funder_id = params[:id]
   funder_doi = funder_doi_from_id(funder_id).first
-  
+
   params = {
     :fl => 'doi,deposited_at,hl_year,month,day',
     :q => "funder_doi:\"#{funder_doi}\"",
     :rows => query_rows,
     :sort => 'deposited_at desc'
   }
-  result = settings.solr.paginate(query_page, query_rows, 
+  result = settings.solr.paginate(query_page, query_rows,
                                   settings.solr_select, :params => params)
 
-  items = result['response']['docs'].map do |r| 
+  items = result['response']['docs'].map do |r|
     {
-      :doi => r['doi'], 
+      :doi => r['doi'],
       :deposited => Date.parse(r['deposited_at']),
       :published => result_publication_date(r)
     }
@@ -925,12 +933,12 @@ get '/funders/dois' do
     :rows => query_rows,
     :sort => 'deposited_at desc'
   }
-  result = settings.solr.paginate(query_page, query_rows, 
+  result = settings.solr.paginate(query_page, query_rows,
                                   settings.solr_select, :params => params)
 
-  items = result['response']['docs'].map do |r| 
+  items = result['response']['docs'].map do |r|
     {
-      :doi => r['doi'], 
+      :doi => r['doi'],
       :deposited => Date.parse(r['deposited_at']),
       :published => result_publication_date(r)
     }
@@ -1011,13 +1019,13 @@ get '/funders/:id' do
     status 404
     'No such funder identifier'
   end
-end 
+end
 
 get '/funders' do
   query = {}
   strict = !['0', 'f', 'false'].include?(params['strict'])
   descendants = ['1', 't', 'true'].include?(params['descendants'])
- 
+
   if params['q']
     query_terms = params['q'].downcase.gsub(/[,\.\-\'\"]/, '').split(/\s+/)
     operator = '$and' if strict
@@ -1059,10 +1067,10 @@ get '/funders' do
       datums.each do |datum|
         datum[:count] = (query_terms & datum[:tokens]).count
       end
-      
+
       datums.sort_by! {|datum| datum[:count]}.reverse!
     end
-    
+
     content_type 'application/json'
     JSON.pretty_generate(datums)
   end
@@ -1090,6 +1098,7 @@ end
 
 get '/' do
   if !params.has_key?('q') || !query_terms
+=begin
     haml :splash, :locals => {
       :page => {
         :query => '',
@@ -1097,6 +1106,14 @@ get '/' do
         :branding => settings.crmds_branding
       }
     }
+=end
+haml :api_test, :locals => {
+  :page => {
+    :query => '',
+    :stats => splash_stats,
+    :branding => settings.crmds_branding
+  }
+}
   else
     solr_result = select(search_query)
     page = result_page(solr_result)
@@ -1106,7 +1123,15 @@ get '/' do
     }
   end
 end
-
+get '/help/me' do
+  haml :api_test, :locals => {
+    :page => {
+      :query => '',
+      :stats => splash_stats,
+      :branding => settings.crmds_branding
+    }
+  }
+end
 get '/references' do
   haml :references, :locals => {
     :page => {:branding => settings.crmds_branding}
@@ -1131,7 +1156,7 @@ end
 get '/help/api' do
   haml :api_help, :locals => {
     :page => {
-      :query => '', 
+      :query => '',
       :branding => settings.crmds_branding
     }
   }
@@ -1150,7 +1175,7 @@ get '/help/status' do
   haml :status_help, :locals => {
     :page => {
       :branding => settings.crmds_branding,
-      :query => '', 
+      :query => '',
       :stats => index_stats
     }
   }
@@ -1347,4 +1372,3 @@ get '/heartbeat' do
     {:version => '1.0', :status => :error, :type => e.class, :message => e}.to_json
   end
 end
-

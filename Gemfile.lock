@@ -103,6 +103,7 @@ DEPENDENCIES
   resque
   resque-pool
   rsolr
+  serrano
   sinatra
   unicorn
   will_paginate
