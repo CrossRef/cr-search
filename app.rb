@@ -10,7 +10,6 @@ require 'faraday'
 require 'faraday_middleware'
 require 'haml'
 require 'rack-session-mongo'
-require 'serrano'
 # require 'oauth2'
 # require 'omniauth-orcid'
 require 'resque'
@@ -29,7 +28,7 @@ require_relative 'lib/data'
 require_relative 'lib/orcid_update'
 require_relative 'lib/orcid_claim'
 require_relative 'lib/orcid_auth'
-
+require_relative 'lib/api_calls'
 MIN_MATCH_SCORE = 2
 MIN_MATCH_TERMS = 3
 MAX_MATCH_TEXTS = 1000
@@ -43,16 +42,14 @@ configure do
   config.each_pair do |key, value|
     set key.to_sym, value
   end
-  Serrano.configuration do |config|
-    config.base_url = settings.api_url
-    #config.mailto = settings.api_contact
-  end
+
   # Work around rack protection referrer bug
   set :protection, :except => :json_csrf
 
   # Configure solr
-  set :solr, Serrano.base_url
-
+  set :solr, settings.api_url
+  set :api, APICalls.new(settings.api_url, settings.api_contact)
+  #binding.pry
   # Configure mongo
   set :mongo, Mongo::Connection.new(settings.mongo_host)
   set :dois, settings.mongo[settings.mongo_db]['dois']
@@ -96,7 +93,8 @@ configure do
   set :orcid_service, Faraday.new(:url => settings.orcid_site)
 
   # Crossref API endpoint
-  set :api_service, Faraday.new(:url => 'https://api.crossref.org')
+  set :api_service, Faraday.new(settings.api_url)
+
 
   # Orcid oauth2 object we can use to make API calls
   set :orcid_oauth, OAuth2::Client.new(settings.orcid_client_id,
@@ -216,7 +214,6 @@ helpers do
   end
 
   def response_format
-    binding.pry
     if params.has_key?('format') && params['format'] == 'json'
       'json'
     else
@@ -548,13 +545,11 @@ helpers do
   end
 
   def splash_stats
-    works = Serrano.works
-    doi_num = works["message"]["total-results"]
-    funders = Serrano.funders
-    f_count = funders["message"]["total-results"]
+    doi_num = settings.api.count("works")
+    funders = settings.api.count("funders")
     {:dois => doi_num,
-     :funding_dois => 20,
-     :funders => f_count}
+     :funding_dois => 2099774,
+     :funders => funders}
   end
 
   def index_stats
@@ -1022,6 +1017,7 @@ get '/funders/:id' do
 end
 
 get '/funders' do
+
   query = {}
   strict = !['0', 'f', 'false'].include?(params['strict'])
   descendants = ['1', 't', 'true'].include?(params['descendants'])
@@ -1098,7 +1094,6 @@ end
 
 get '/' do
   if !params.has_key?('q') || !query_terms
-=begin
     haml :splash, :locals => {
       :page => {
         :query => '',
@@ -1106,14 +1101,6 @@ get '/' do
         :branding => settings.crmds_branding
       }
     }
-=end
-haml :api_test, :locals => {
-  :page => {
-    :query => '',
-    :stats => splash_stats,
-    :branding => settings.crmds_branding
-  }
-}
   else
     solr_result = select(search_query)
     page = result_page(solr_result)
@@ -1123,15 +1110,7 @@ haml :api_test, :locals => {
     }
   end
 end
-get '/help/me' do
-  haml :api_test, :locals => {
-    :page => {
-      :query => '',
-      :stats => splash_stats,
-      :branding => settings.crmds_branding
-    }
-  }
-end
+
 get '/references' do
   haml :references, :locals => {
     :page => {:branding => settings.crmds_branding}
