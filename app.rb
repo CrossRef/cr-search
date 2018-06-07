@@ -540,15 +540,15 @@ helpers do
   end
 
   def funder_count
-    response = settings.api_service.get('/v1/funders?rows=0')
-    JSON.parse(response.body)['message']['total-results']
+    settings.api.count("funders")
   end
 
   def splash_stats
     doi_num = settings.api.count("works")
     funders = settings.api.count("funders")
+    funding_dois = settings.api.call("works?filter=has-funder:true&rows=0")
     {:dois => doi_num,
-     :funding_dois => 2099774,
+     :funding_dois => funding_dois,
      :funders => funders}
   end
 

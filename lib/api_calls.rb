@@ -21,6 +21,12 @@ class APICalls
     end
   end
 
+  def call(url_fragment)
+    url = "/#{url_fragment}"
+    response = @url.get(url_fragment)
+    JSON.parse(response.body)['message']['total-results']
+  end
+
 
   private
 
