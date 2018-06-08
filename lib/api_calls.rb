@@ -27,10 +27,30 @@ class APICalls
     JSON.parse(response.body)['message']['total-results']
   end
 
+  def query(query_params)
+    url = "/works?"
+    url_array = []
+    @facet_fields = query_params[:facet]
+    facets = explode_facets
+    facet_url = facets.join(",")
+    query_params[:facet] = facet_url
+    query_params.each_pair { |f,v|
+      f = f == :q ? "query" : f
+      url_array << "#{f}=#{v}"
+    }
+    url += url_array.join("&")
+
+    rsp = @url.get(url)
+    JSON.parse(rsp.body)
+  end
 
   private
 
   def acceptable_count
     %w(works funders members types licenses journals)
+  end
+
+  def explode_facets
+    @facet_fields.map { |f| "#{f}:*" }
   end
 end
