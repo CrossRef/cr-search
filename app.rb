@@ -84,10 +84,11 @@ configure do
   }
 
   # Set facet fields
-  set :facet_fields, ['type', 'year', 'publication', 'category', 'publisher_str', 'funder_name', 'source']
-  set :crmds_facet_fields, ['type', 'year', 'publication', 'category', 'publisher_str', 'funder_name', 'source']
-  set :fundref_facet_fields, ['type', 'year', 'publication', 'category', 'publisher_str', 'source']
-  set :chorus_facet_fields, ['category', 'type', 'year', 'publication', 'publisher_str', 'source']
+
+  set :facet_fields, ['type-name','published','container-title','publisher-name','funder-name','source']
+  set :crmds_facet_fields, ['type-name','published','container-title','publisher-name','funder-name','source']
+  set :fundref_facet_fields, ['type-name','published','container-title','publisher-name','funder-name','source']
+  set :chorus_facet_fields, ['type-name','published','container-title','publisher-name','funder-name','source']
 
   # Orcid endpoint
   set :orcid_service, Faraday.new(:url => settings.orcid_site)
@@ -203,7 +204,8 @@ helpers do
 
     page = [query_page, 10].min
     rows = query_rows
-    results = settings.solr.paginate page, rows, settings.solr_select, :params => query_params
+    results = settings.api.query(query_params)
+    #results = settings.solr.paginate page, rows, settings.solr_select, :params => query_params
   end
 
   def select_all query_params
@@ -295,29 +297,28 @@ helpers do
   end
 
   def sort_term
-    if 'year' == params['sort']
-      'year desc, score desc'
+    if 'published' == params['sort']
+      'published&order=desc'
     else
-      'score desc'
+      'score&order=desc'
     end
   end
 
   def base_query
     {
       :sort => sort_term,
-      :fl => query_columns,
+      #:fl => query_columns,
       :rows => query_rows,
-      :facet => 'true',
-      'facet.field' => settings.facet_fields,
-      'facet.mincount' => 1,
-      :hl => 'true',
-      'hl.preserveMulti' => 'true',
-      'hl.fl' => 'hl_*',
-      'hl.simple.pre' => '<span class="hl">',
-      'hl.simple.post' => '</span>',
-      'hl.mergeContinuous' => 'true',
-      'hl.snippets' => 10,
-      'hl.fragsize' => 0
+      :facet => settings.facet_fields,
+      #'facet.mincount' => 1,
+      #:hl => 'true',
+      #'hl.preserveMulti' => 'true',
+      #'hl.fl' => 'hl_*',
+      #'hl.simple.pre' => '<span class="hl">',
+      #'hl.simple.post' => '</span>',
+      #'hl.mergeContinuous' => 'true',
+      #'hl.snippets' => 10,
+      #'hl.fragsize' => 0
     }
   end
 
@@ -331,7 +332,6 @@ helpers do
   def search_query
     terms = query_terms || '*:*'
     query = base_query.merge({:q => terms})
-
     fq = facet_query
     query['fq'] = fq unless fq.empty?
     query
