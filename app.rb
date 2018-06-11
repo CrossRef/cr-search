@@ -307,18 +307,8 @@ helpers do
   def base_query
     {
       :sort => sort_term,
-      #:fl => query_columns,
       :rows => query_rows,
       :facet => settings.facet_fields,
-      #'facet.mincount' => 1,
-      #:hl => 'true',
-      #'hl.preserveMulti' => 'true',
-      #'hl.fl' => 'hl_*',
-      #'hl.simple.pre' => '<span class="hl">',
-      #'hl.simple.post' => '</span>',
-      #'hl.mergeContinuous' => 'true',
-      #'hl.snippets' => 10,
-      #'hl.fragsize' => 0
     }
   end
 
@@ -367,7 +357,7 @@ helpers do
       },
       :items => search_results(solr_result),
       :paginate => Paginate.new(query_page, query_rows, solr_result),
-      :facets => solr_result['facet_counts']['facet_fields']
+      :facets => solr_result['facets']
     }
   end
 
@@ -436,9 +426,8 @@ helpers do
         profile_dois = orcid_record['dois']
       end
     end
-
-    solr_result['response']['docs'].map do |solr_doc|
-      doi = solr_doc['doi_key']
+    solr_result['message']['items'].map do |solr_doc|
+      doi = solr_doc['DOI']
       plain_doi = to_doi(doi)
       in_profile = profile_dois.include?(plain_doi)
       claimed = claimed_dois.include?(plain_doi)
@@ -446,8 +435,7 @@ helpers do
         :in_profile => in_profile,
         :claimed => claimed
       }
-
-      SearchResult.new solr_doc, solr_result, citations(solr_doc['doi_key']), user_state
+      SearchResult.new solr_doc, solr_result, citations(solr_doc['DOI']), user_state
     end
   end
 
