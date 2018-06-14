@@ -2,12 +2,12 @@ require 'json'
 require 'faraday'
 
 class APICalls
-  attr_reader :url, :query, :mailto
+  attr_reader :url, :query, :token
   attr_writer :works_count, :funders_count, :results
-
-  def initialize(url,mailto=nil,query=nil)
+  FACET_RESULT_COUNT = 10
+  def initialize(url,token=nil,query=nil)
     @url = Faraday.new(url)
-    @url.headers.merge!({"mailto" => mailto})
+    @url.headers.merge!({"Authorization" => token})
     @query = query
   end
 
@@ -39,7 +39,6 @@ class APICalls
       url_array << "#{f}=#{v}"
     }
     url += url_array.join("&")
-
     rsp = @url.get(url)
     JSON.parse(rsp.body)
   end
@@ -51,6 +50,6 @@ class APICalls
   end
 
   def explode_facets
-    @facet_fields.map { |f| "#{f}:*" }
+    @facet_fields.map { |f| "#{f}:#{FACET_RESULT_COUNT}" }
   end
 end

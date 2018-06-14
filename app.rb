@@ -48,8 +48,8 @@ configure do
 
   # Configure solr
   set :solr, settings.api_url
-  set :api, APICalls.new(settings.api_url, settings.api_contact)
-  #binding.pry
+  set :api_token, ENV['CROSSREF_API_TOKEN']
+  set :api, APICalls.new(settings.api_url, settings.api_token)
   # Configure mongo
   set :mongo, Mongo::Connection.new(settings.mongo_host)
   set :dois, settings.mongo[settings.mongo_db]['dois']
