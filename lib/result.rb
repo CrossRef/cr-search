@@ -19,6 +19,7 @@ class SearchResult
   ENGLISH_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
+=begin
   def has_path? hash, path
     path_found = true
     path.each do |node|
@@ -44,31 +45,39 @@ class SearchResult
       []
     end
   end
-
+=end
+def parse_people(people)
+  name = []
+  people.each { |p|
+    name << "#{p["given"]} #{p["family"]}"
+  }
+  name
+end
   # Merge a mongo DOI record with solr highlight information.
   def initialize solr_doc, solr_result, citations, user_state
-    @doi = solr_doc['doi']
-    @display_doi = to_long_display_doi(solr_doc['doi'])
+    @doi = solr_doc['DOI']
+    @display_doi = to_long_display_doi(solr_doc['DOI'])
     @type = solr_doc['type']
     @doc = solr_doc
     @score = solr_doc['score']
-    @normal_score = ((@score / solr_result['response']['maxScore']) * 100).to_i
+    @score = @normal_score
+    #@normal_score = ((@score / solr_result['response']['maxScore']) * 100).to_i
     @citations = citations
-    @hashed =  Digest::MD5.hexdigest(solr_doc['doi_key'])
+    @hashed =  Digest::MD5.hexdigest(solr_doc['DOI'])
     @user_claimed = user_state[:claimed]
     @in_user_profile = user_state[:in_profile]
 
-    @highlights = solr_result['highlighting']
-
-    @publication = find_value('hl_publication')
-    @title = find_value('hl_title')
-    @year = find_value('hl_year')
-    @month = ENGLISH_MONTHS[solr_doc['month'] - 1] if solr_doc['month']
-    @day = solr_doc['day']
-    @volume = find_value('hl_volume')
-    @issue = find_value('hl_issue')
-    @authors = find_value('hl_authors')
-    @editors = find_value('hl_editors')
+    #@highlights = solr_result['highlighting']
+    @highlights = {}
+    @publication = solr_doc["container-title"][0] if solr_doc["container-title"]
+    @title = solr_doc["title"][0]
+    @year, @month, @day = solr_doc["published-print"]["date-parts"][0]
+    @month = ENGLISH_MONTHS[solr_doc['month'].to_i - 1] if @month
+    @volume = solr_doc["volume"]
+    @issue = solr_doc["issue"]
+    @authors = parse_people(solr_doc["author"])
+    @editors = parse_people(solr_doc["editor"])
+        binding.pry
     @translators = find_value('hl_translators')
     @chairs = find_value('hl_chairs')
     @contributors = find_value('hl_contributors')
@@ -103,7 +112,7 @@ class SearchResult
 
     award_numbers.join(', ')
   end
-     
+
   def doi
     @doi
   end
@@ -258,4 +267,3 @@ class SearchResult
     a.join ', '
   end
 end
-
