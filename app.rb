@@ -357,7 +357,7 @@ helpers do
       },
       :items => search_results(solr_result),
       :paginate => Paginate.new(query_page, query_rows, solr_result),
-      :facets => solr_result['facets']
+      :facets => solr_result['message']['facets']
     }
   end
 
@@ -1092,7 +1092,6 @@ get '/' do
   else
     solr_result = select(search_query)
     page = result_page(solr_result)
-
     haml :results, :locals => {
       :page => page.merge({:branding => settings.crmds_branding})
     }

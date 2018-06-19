@@ -32,15 +32,26 @@ class SearchResult
       first_page,last_page = pages.split("-") if pages =~ /-/
     end
 
+    def parse_funders(funder)
+      funder_info = []
+      funder.each { |f|
+        award = f["award"].count > 0 ? " (#{f["award"].join("")})" : ""
+        funder_info << "#{f["name"]}#{award}"
+      }
+      funder_info
+    end
+
     def get_date
-      date = @doc["published-print"] ? @doc["published-print"] : @doc["published-online"]
-      date["date-parts"][0]
+      # why is this crashing on this search: "A supermassive black hole in an ultra-compact dwarf galaxy"
+      date = @doc["published-print"].nil? ? @doc["published-online"] : @doc["published-print"]
+      published_date = date["date-parts"].flatten!
     end
     # Merge a mongo DOI record with solr highlight information.
     def initialize solr_doc, solr_result, citations, user_state
       @doi = solr_doc['DOI']
       @display_doi = to_long_display_doi(solr_doc['DOI'])
       @type = solr_doc['type']
+
       @doc = solr_doc
       @score = solr_doc['score']
       @score = @normal_score
@@ -66,18 +77,20 @@ class SearchResult
       }
       @contributors = contributors.flatten.compact if contributors.size > 0
       @first_page,@last_page = parse_pages(solr_doc['page']) if solr_doc["page"]
-      binding.pry
-=begin
-      @funder_names = find_value('hl_funder_name')
-      @plain_funder_names = solr_doc['funder_name'].join(', ') if solr_doc['funder_name']
-      @grant_info = find_value('hl_grant')
+      @funder_names = []
+      if solr_doc["funder"]
+        solr_doc["funder"].each { |f|
+          @funder_names << f["name"]
+        }
+      end
+      @plain_funder_names = @funder_names unless @funder_names.nil?
+      @grant_info = parse_funders(solr_doc["funder"]) if solr_doc["funder"]
 
-      if solr_doc['supplementary_id'].nil?
+      if solr_doc['alternative-id'].nil?
         @supplementary_ids = []
       else
-        @supplementary_ids = solr_doc['supplementary_id'].map {|uri| uri.sub(/http:\/\/id\.crossref\.org\/supp\//, '')}
+        @supplementary_ids = solr_doc['alternative-id']
       end
-=end
     end
 
     def award_numbers
@@ -116,47 +129,55 @@ class SearchResult
     end
 
     def coins_atitle
-      @doc['hl_title'].first if @doc['hl_title']
+      @title if @title
     end
 
     def coins_title
-      @doc['hl_publication'].first if @doc['hl_publication']
+      @publication if @publication
     end
 
     def coins_year
-      @doc['hl_year']
+      @year
     end
 
     def coins_volume
-      @doc['hl_volume']
+      @volume if @volume
     end
 
     def coins_issue
-      @doc['hl_issue']
+      @issue if @issue
     end
 
     def coins_spage
-      @doc['hl_first_page']
+      @first_page if @first_page
     end
 
     def coins_lpage
-      @doc['hl_last_page']
+      @last_page if @last_page
     end
 
     def coins_authors
-      if @doc['hl_authors']
-        @doc['hl_authors']
-      else
-        ''
-      end
+      authors = @authors.nil? ? '' : @authors.join(",")
     end
 
     def coins_au_first
-      @doc['first_author_given']
+      fa = nil
+      if @authors
+        a = []
+        first_author = @authors[0].split(" ")
+        first_author.each { |i| a << i unless i == first_author.last }
+        fa = a.join(" ")
+      end
+      fa
     end
 
     def coins_au_last
-      @doc['first_author_surname']
+      fa_lastname = nil
+      if @authors
+        first_author = @authors[0].split(" ")
+        fa_lastname = first_author.last
+      end
+      fa_lastname
     end
 
     def coins
@@ -224,7 +245,7 @@ class SearchResult
       end
 
       title = title_parts.join('&')
-
+      #binding.pry if @doc["DOI"] == "10.1007/978-1-4842-2778-7_2"
       coins_authors.split(',').each { |author| title += "&rft.au=#{CGI.escape(author)}" }
 
       CGI.escapeHTML title
