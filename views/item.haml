@@ -1,9 +1,9 @@
 %tr
   %td.item-data
+    -# binding.pry
     - unless item.title.nil?
-      %p.lead  
-        = item.title.first
-        
+      %p.lead
+        = item.title
       %p.extra{:style => 'margin-top: .5em;'}
         %span
           - if test_doi?(item.doi)
@@ -16,53 +16,51 @@
               = item.day
             - unless item.month.nil?
               = item.month
-            - unless item.year.empty?
-              = item.year.first
-        - unless item.publication.empty?
+            - unless item.year.nil?
+              = item.year
+        - unless item.publication.nil?
           %span
             in
-            %b= item.publication.first
-        - unless item.volume.empty?
+            %b= item.publication
+        - unless item.volume.nil?
           %span
             volume
-            %b= item.volume.first
-        - unless item.issue.empty?
+            %b= item.volume
+        - unless item.issue.nil?
           %span
             issue
-            %b= item.issue.first
-        - if !item.first_page.empty? && !item.last_page.empty?
+            %b= item.issue
+        - if !item.first_page.nil? && !item.last_page.nil?
           %span
             on pages
-            %b= item.first_page.first
+            %b= item.first_page
             to
-            %b= item.last_page.first
-        - elsif !item.first_page.empty?
+            %b= item.last_page
+        - elsif !item.first_page.nil?
           %span
             on page
-            %b= item.first_page.first
-
-    - unless item.grant_info.empty?
+            %b= item.first_page
+    - unless item.grant_info.nil?
       %p.extra
         %span Research funded by
         %span= item.grant_info.join('  |  ')
-        
-    - unless item.authors.empty?
+
+    - unless item.authors.nil?
       %p.expand= "Authors: #{item.authors.first}"
 
-    - unless item.editors.empty?
+    - unless item.editors.nil?
       %p.expand= "Editors: #{item.editors.first}"
 
-    - unless item.chairs.empty?
+    - unless item.chairs.nil?
       %p.expand= "Chairs: #{item.chairs.first}"
 
-    - unless item.translators.empty?
+    - unless item.translators.nil?
       %p.expand= "Translated: #{item.translators.first}"
 
-    - unless item.contributors.empty?
+    - unless item.contributors.nil?
       %p.expand= "Contributors: #{item.contributors.first}"
 
-    - unless item.supplementary_ids.empty? || item.type != 'standard'
+    - unless item.supplementary_ids.nil? || item.type != 'standard'
       %p.expand= "Other IDs: #{item.supplementary_ids.join(', ')}"
 
     = partial :item_links, :item => item
-        
