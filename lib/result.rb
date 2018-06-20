@@ -52,7 +52,6 @@ class SearchResult
     # Merge a mongo DOI record with solr highlight information.
     def initialize solr_doc, solr_result, citations, user_state
       @doi = solr_doc['DOI']
-      puts @doi
       @display_doi = to_long_display_doi(solr_doc['DOI'])
       @type = solr_doc['type']
 
@@ -245,7 +244,6 @@ class SearchResult
       end
 
       title = title_parts.join('&')
-      #binding.pry if @doc["DOI"] == "10.1007/978-1-4842-2778-7_2"
       coins_authors.split(',').each { |author| title += "&rft.au=#{CGI.escape(author)}" }
 
       CGI.escapeHTML title

@@ -204,6 +204,7 @@ helpers do
 
     page = [query_page, 10].min
     rows = query_rows
+    query_params.merge!(:page => page)
     results = settings.api.query(query_params)
     #results = settings.solr.paginate page, rows, settings.solr_select, :params => query_params
   end

@@ -12,7 +12,7 @@
   .gap {
     display: none;
   }
-  
+
   .nav-list > .active > a {
     background-color: rgb(56, 166, 203);
   }
@@ -36,14 +36,14 @@
   }
 
 = partial :search_header, :page => page
-        
+
 .row-fluid
   .span3
     = partial :facets, :page => page
   .span9
     .list-info
       .pull-right
-        %h6.number= "Page #{page[:page]} of #{page[:paginate].total_rows} results" 
+        %h6.number= "Page #{page[:page]} of #{page[:paginate].total_rows} results"
       %span
         %h6
           Sort by:
