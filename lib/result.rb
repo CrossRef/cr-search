@@ -42,13 +42,17 @@ class SearchResult
     end
 
     def get_date
-      # why is this crashing on this search: "A supermassive black hole in an ultra-compact dwarf galaxy"
-      date = @doc["published-print"].nil? ? @doc["published-online"] : @doc["published-print"]
-      published_date = date["date-parts"].flatten!
+      dates = nil
+      if @doc["published-print"] || @doc["published-online"]
+        date = @doc["published-print"].nil? ? @doc["published-online"] : @doc["published-print"]
+        dates = date["date-parts"].first
+      end
+      dates
     end
     # Merge a mongo DOI record with solr highlight information.
     def initialize solr_doc, solr_result, citations, user_state
       @doi = solr_doc['DOI']
+      puts @doi
       @display_doi = to_long_display_doi(solr_doc['DOI'])
       @type = solr_doc['type']
 
@@ -61,8 +65,8 @@ class SearchResult
       @in_user_profile = user_state[:in_profile]
       @publication = solr_doc["container-title"][0] if solr_doc["container-title"]
       @title = solr_doc["title"][0] if solr_doc["title"]
-      @year, @month, @day = get_date
-      @month = ENGLISH_MONTHS[solr_doc['month'].to_i - 1] if @month
+      @year, month, @day = get_date
+      @month = ENGLISH_MONTHS[month.to_i - 1] if month
       @volume = solr_doc["volume"] if solr_doc["volume"]
       @issue = solr_doc["issue"] if solr_doc["issue"]
       # optimize people
