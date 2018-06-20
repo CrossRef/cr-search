@@ -46,7 +46,6 @@
       %p.extra
         %span Research funded by
         %span= item.grant_info.join('  |  ')
-    -# binding.pry if item.doi == "10.1038/nature13762"
     - unless item.authors.nil?
       %p.expand= "Authors: #{item.authors.join(", ")}"
 

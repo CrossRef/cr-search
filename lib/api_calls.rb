@@ -2,13 +2,12 @@ require 'json'
 require 'faraday'
 
 class APICalls
-  attr_reader :url, :query, :token
+  attr_reader :url, :token
   attr_writer :works_count, :funders_count, :results
   FACET_RESULT_COUNT = 10
-  def initialize(url,token=nil,query=nil)
+  def initialize(url,token=nil)
     @url = Faraday.new(url)
     @url.headers.merge!({"Authorization" => token})
-    @query = query
   end
 
   def count(type)
@@ -28,6 +27,11 @@ class APICalls
   end
 
   def query(query_params)
+    @rows = query_params[:rows].to_i
+    @page = query_params[:page].to_i
+    query_params.delete(:page)
+    offset = @page > 1 ? get_offset : nil
+    query_params.merge!(:offset => offset) unless offset.nil?
     url = "/works?"
     url_array = []
     @facet_fields = query_params[:facet]
@@ -51,5 +55,9 @@ class APICalls
 
   def explode_facets
     @facet_fields.map { |f| "#{f}:#{FACET_RESULT_COUNT}" }
+  end
+
+  def get_offset
+    @rows * (@page - 1)
   end
 end
