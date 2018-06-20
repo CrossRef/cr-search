@@ -69,13 +69,9 @@ class SearchResult
       @authors = parse_people(solr_doc["author"]) if solr_doc["author"]
       @editors = parse_people(solr_doc["editor"]) if solr_doc["editor"]
       @translators = parse_people(solr_doc['translator']) if solr_doc["translator"]
-      @ppl = {"author" => @authors, "editor" => @editors, "translator" => @translators}
+
       @chairs = parse_people(solr_doc['chair']) if solr_doc["chair"]
-      contributors = []
-      @ppl.keys.each { |c|
-        contributors << @ppl[c] if @ppl.key?(c)
-      }
-      @contributors = contributors.flatten.compact if contributors.size > 0
+      @contributors = []
       @first_page,@last_page = parse_pages(solr_doc['page']) if solr_doc["page"]
       @funder_names = []
       if solr_doc["funder"]
