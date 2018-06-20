@@ -9,7 +9,8 @@
           - if test_doi?(item.doi)
             %b{:style => 'color: rgb(207, 121, 121);'} Example Item
           - else
-            %b= item.type
+            - type = item.type.split(/\W/).each { |w| w.capitalize! }.join(" ")
+            %b= type
           published
           %b
             - unless item.day.nil?
@@ -57,7 +58,7 @@
     - unless item.translators.nil?
       %p.expand= "Translated: #{item.translators.first}"
 
-    - unless item.contributors.nil?
+    - unless item.contributors.empty?
       %p.expand= "Contributors: #{item.contributors.first}"
 
     - unless item.supplementary_ids.nil? || item.type != 'standard'
