@@ -278,12 +278,10 @@ helpers do
     settings.facet_fields.each do |field|
       if params.has_key? field
         val = params[field]
-        #params[field].split(';').each do |val|
-        facet_field = settings.api.map_filter_names[field]
-        val = facet_field == "type" ? settings.api.format_types(val) : val
-        fq[facet_field] ||= []
-        fq[facet_field] << val
-        #end
+        params[field].split(';').each do |val|
+          fq[field] ||= []
+          fq[field] << val
+        end
       end
     end
     fq
@@ -326,7 +324,7 @@ helpers do
     terms = query_terms || '*:*'
     query = base_query.merge({:q => terms})
     fq = facet_query
-    query[:filter] = fq.join(",") unless fq.empty?
+    query[:filter] = fq unless fq.empty?
     query
   end
 
@@ -429,6 +427,7 @@ helpers do
         profile_dois = orcid_record['dois']
       end
     end
+    #binding.pry
     solr_result['message']['items'].map do |solr_doc|
       doi = solr_doc['DOI']
       plain_doi = to_doi(doi)
