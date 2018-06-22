@@ -206,7 +206,6 @@ helpers do
     rows = query_rows
     query_params.merge!(:page => page)
     results = settings.api.query(query_params)
-    #results = settings.solr.paginate page, rows, settings.solr_select, :params => query_params
   end
 
   def select_all query_params
@@ -278,10 +277,13 @@ helpers do
     fq = {}
     settings.facet_fields.each do |field|
       if params.has_key? field
-        params[field].split(';').each do |val|
-          fq[field] ||= []
-          fq[field] << val
-        end
+        val = params[field]
+        #params[field].split(';').each do |val|
+        facet_field = settings.api.map_filter_names[field]
+        val = facet_field == "type" ? settings.api.format_types(val) : val
+        fq[facet_field] ||= []
+        fq[facet_field] << val
+        #end
       end
     end
     fq
@@ -291,7 +293,7 @@ helpers do
     fq = []
     abstract_facet_query.each_pair do |name, values|
       values.each do |value|
-        fq << "#{name}: \"#{value}\""
+        fq << "#{name}:#{value}"
       end
     end
     fq
@@ -324,7 +326,7 @@ helpers do
     terms = query_terms || '*:*'
     query = base_query.merge({:q => terms})
     fq = facet_query
-    query['fq'] = fq unless fq.empty?
+    query[:filter] = fq.join(",") unless fq.empty?
     query
   end
 
