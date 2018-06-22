@@ -27,6 +27,7 @@ class APICalls
   end
 
   def query(query_params)
+    # optimize code
     @rows = query_params[:rows].to_i
     @page = query_params[:page].to_i
     query_params.delete(:page)
@@ -47,6 +48,15 @@ class APICalls
     JSON.parse(rsp.body)
   end
 
+  def map_filter_names
+    { "type-name" => "type",
+      "published" => "from-pub-date"
+    }
+  end
+
+  def format_types(type,delimiter=" ",join="-")
+    type.downcase.split(delimiter).join(join)
+  end
   private
 
   def acceptable_count
@@ -60,4 +70,13 @@ class APICalls
   def get_offset
     @rows * (@page - 1)
   end
+
+  def process_filter
+    url = ""
+    @filter.each { |f|
+
+    }
+  end
+
+
 end
