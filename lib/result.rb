@@ -29,7 +29,12 @@ class SearchResult
 
     def parse_pages(pages)
       first_page,last_page = nil
-      first_page,last_page = pages.split("-") if pages =~ /-/
+      if pages =~ /-/
+        first_page,last_page = pages.split("-")
+      else
+        first_page = pages
+      end
+      [first_page,last_page]
     end
 
     def parse_funders(funder)
