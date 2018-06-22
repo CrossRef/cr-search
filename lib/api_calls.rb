@@ -27,9 +27,10 @@ class APICalls
   end
 
   def query(query_params)
-    # optimize code
     @rows = query_params[:rows].to_i
     @page = query_params[:page].to_i
+    @filter = query_params[:filter] if query_params.key?(:filter)
+    query_params[:filter] = process_filter if @filter
     query_params.delete(:page)
     offset = @page > 1 ? get_offset : nil
     query_params.merge!(:offset => offset) unless offset.nil?
@@ -48,15 +49,7 @@ class APICalls
     JSON.parse(rsp.body)
   end
 
-  def map_filter_names
-    { "type-name" => "type",
-      "published" => "from-pub-date"
-    }
-  end
 
-  def format_types(type,delimiter=" ",join="-")
-    type.downcase.split(delimiter).join(join)
-  end
   private
 
   def acceptable_count
@@ -72,11 +65,32 @@ class APICalls
   end
 
   def process_filter
-    url = ""
+    url=[]
     @filter.each { |f|
+      field,value = f.split(":")
+      field = map_filter_names.key?(field) ? map_filter_names[field] : field
+      if indexed_value.key?(value)
+        value = indexed_value[value]
+      elsif field == "type"
+        value = format_types(value)
+      end
+      url << "#{field}:#{value}"
+    }
+    url.join(",")
+  end
 
+  def map_filter_names
+    { "type-name" => "type",
+      "published" => "from-pub-date"
     }
   end
 
+  def format_types(type,delimiter=" ",join="-")
+    type.downcase.split(delimiter).join(join)
+  end
+
+  def indexed_value
+    {"Conference Paper" => "proceedings-article"}
+  end
 
 end
