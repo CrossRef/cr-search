@@ -90,7 +90,9 @@ class APICalls
   end
 
   def indexed_value
-    {"Conference Paper" => "proceedings-article"}
+    {"Conference Paper" => "proceedings-article",
+     "Chapter" => "book-chapter"
+    }
   end
 
 end

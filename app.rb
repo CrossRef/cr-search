@@ -298,7 +298,7 @@ helpers do
   end
 
   def sort_term
-    if 'published' == params['sort']
+    if 'year' == params['sort']
       'published&order=desc'
     else
       'score&order=desc'
