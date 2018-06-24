@@ -69,20 +69,13 @@ class APICalls
     @filter.each { |f|
       field,value = f.split(":")
       field = map_filter_names.key?(field) ? map_filter_names[field] : field
-      if indexed_value.key?(value)
-        value = indexed_value[value]
-      elsif field == "type"
-        value = format_types(value)
-      end
       url << "#{field}:#{value}"
     }
     url.join(",")
   end
 
   def map_filter_names
-    { "type-name" => "type",
-      "published" => "from-pub-date"
-    }
+    { "published" => "from-pub-date" }
   end
 
   def format_types(type,delimiter=" ",join="-")
