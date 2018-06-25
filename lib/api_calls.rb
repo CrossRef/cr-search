@@ -29,8 +29,16 @@ class APICalls
   def query(query_params)
     @rows = query_params[:rows].to_i
     @page = query_params[:page].to_i
-    @filter = query_params[:filter] if query_params.key?(:filter)
-    query_params[:filter] = process_filter if @filter
+    @filter = query_params[:filter_query] if query_params.key?(:filter_query)
+    # change query param to either query.field name or filter depending on field name
+    if @filter
+      filter_params = process_filter
+      query_params.delete(:filter_query)
+      filter_params.each_pair { |k,v|
+        value = k == :filter ? v.join(",") : v
+        query_params[k] = value
+      }
+    end
     query_params.delete(:page)
     offset = @page > 1 ? get_offset : nil
     query_params.merge!(:offset => offset) unless offset.nil?
@@ -40,6 +48,7 @@ class APICalls
     facets = explode_facets
     facet_url = facets.join(",")
     query_params[:facet] = facet_url
+
     query_params.each_pair { |f,v|
       f = f == :q ? "query" : f
       url_array << "#{f}=#{v}"
@@ -65,27 +74,33 @@ class APICalls
   end
 
   def process_filter
-    url=[]
+    url={}
+    url[:filter] = [] #initializing array
     @filter.each { |f|
       field,value = f.split(":")
-      field = map_filter_names.key?(field) ? map_filter_names[field] : field
-      url << "#{field}:#{value}"
+      case
+      when filter_types.include?(field)
+       field = map_filter_names.key?(field) ? map_filter_names[field] : field
+       url[:filter] << "#{field}:#{value}"
+      when query_field_names.include?(field)
+       k = "query.#{field}".to_sym
+       url[k] = value
+      end
     }
-    url.join(",")
+    url.delete(:filter) if url[:filter].empty?
+    url
   end
 
   def map_filter_names
     { "published" => "from-pub-date" }
   end
 
-  def format_types(type,delimiter=" ",join="-")
-    type.downcase.split(delimiter).join(join)
+
+  def filter_types
+    ["type-name","published","container-title"]
   end
 
-  def indexed_value
-    {"Conference Paper" => "proceedings-article",
-     "Chapter" => "book-chapter"
-    }
+  def query_field_names
+    ["publisher-name","funder-name"]
   end
-
 end

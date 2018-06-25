@@ -85,10 +85,10 @@ configure do
 
   # Set facet fields
 
-  set :facet_fields, ['type-name','published','container-title','publisher-name','funder-name','source']
-  set :crmds_facet_fields, ['type-name','published','container-title','publisher-name','funder-name','source']
-  set :fundref_facet_fields, ['type-name','published','container-title','publisher-name','funder-name','source']
-  set :chorus_facet_fields, ['type-name','published','container-title','publisher-name','funder-name','source']
+  set :facet_fields, ['type-name','published','container-title','publisher-name','funder-name']
+  set :crmds_facet_fields, ['type-name','published','container-title','publisher-name','funder-name']
+  set :fundref_facet_fields, ['type-name','published','container-title','publisher-name','funder-name']
+  set :chorus_facet_fields, ['type-name','published','container-title','publisher-name','funder-name']
 
   # Orcid endpoint
   set :orcid_service, Faraday.new(:url => settings.orcid_site)
@@ -324,7 +324,7 @@ helpers do
     terms = query_terms || '*:*'
     query = base_query.merge({:q => terms})
     fq = facet_query
-    query[:filter] = fq unless fq.empty?
+    query[:filter_query] = fq unless fq.empty?
     query
   end
 
