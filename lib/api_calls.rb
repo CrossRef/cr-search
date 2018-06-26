@@ -27,39 +27,76 @@ class APICalls
   end
 
   def query(query_params)
-    @rows = query_params[:rows].to_i
-    @page = query_params[:page].to_i
-    @filter = query_params[:filter_query] if query_params.key?(:filter_query)
-    # change query param to either query.field name or filter depending on field name
-    if @filter
-      filter_params = process_filter
-      query_params.delete(:filter_query)
-      filter_params.each_pair { |k,v|
-        value = k == :filter ? v.join(",") : v
-        query_params[k] = value
-      }
-    end
-    query_params.delete(:page)
-    offset = @page > 1 ? get_offset : nil
-    query_params.merge!(:offset => offset) unless offset.nil?
-    url = "/works?"
-    url_array = []
-    @facet_fields = query_params[:facet]
-    facets = explode_facets
-    facet_url = facets.join(",")
-    query_params[:facet] = facet_url
-
-    query_params.each_pair { |f,v|
-      f = f == :q ? "query" : f
-      url_array << "#{f}=#{v}"
-    }
-    url += url_array.join("&")
-    rsp = @url.get(url)
-    JSON.parse(rsp.body)
+    url = "/works"
+    @query_params = query_params
+    process_query_params
+    url = query_type(url)
+    get_response(url)
   end
 
 
   private
+
+  def process_query_params
+    @rows = @query_params[:rows].to_i
+    @page = @query_params[:page].to_i
+    @filter = @query_params[:filter_query] if @query_params.key?(:filter_query)
+    if @filter
+      filter_params = process_filter
+      @query_params.delete(:filter_query)
+      filter_params.each_pair { |k,v|
+        value = k == :filter ? v.join(",") : v
+        @query_params[k] = value
+      }
+    end
+    @query_params.delete(:page)
+    offset = @page > 1 ? get_offset : nil
+    @query_params.merge!(:offset => offset) unless offset.nil?
+    @facet_fields = @query_params[:facet]
+    facets = explode_facets
+    facet_url = facets.join(",")
+    @query_params[:facet] = facet_url
+  end
+
+
+  def get_response(url)
+    rsp = @url.get(url)
+    JSON.parse(rsp.body)
+  end
+
+  def query_type(url)
+    url_array = []
+    @query_params.each_pair { |f,v|
+      url_array << "#{f}=#{v}" unless f == :q
+    }
+    case @query_params[:q]
+    when /^doi\:/
+      search_param = @query_params[:q].split("doi:")[1]
+      url += doi_works_query
+    when /^issn\:/
+      url = issn_journals_query
+    when /^orcid\:/
+      url += "?filter=#{@query_params[:q]}"
+    else
+      url += keywords_works_query
+    end
+    url += url_array.join("&")
+  end
+
+  def keywords_works_query
+    "?query=#{@query_params[:q]}"
+  end
+
+  def doi_works_query
+    #search_param = @query_params[:q].split("doi:")[1]
+    #{}"/#{search_param}?"
+    "?query=#{search_param}"
+  end
+
+  def issn_journals_query
+    search_param = @query_params[:q].split("issn:")[1]
+    "/journals/#{search_param}/works?"
+  end
 
   def acceptable_count
     %w(works funders members types licenses journals)
