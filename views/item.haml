@@ -10,8 +10,9 @@
           - else
             -# formatting type in accordance with existing format
             -# "book-chapter" = Book Chapter
-            - type = item.type.split(/\W/).each { |w| w.capitalize! }.join(" ")
-            %b= type
+            - unless item.type.nil?
+              - type = item.type.split(/\W/).each { |w| w.capitalize! }.join(" ")
+              %b= type
           published
           %b
             - unless item.day.nil?

@@ -58,8 +58,7 @@ class SearchResult
     def initialize solr_doc, solr_result, citations, user_state
       @doi = solr_doc['DOI']
       @display_doi = to_long_display_doi(solr_doc['DOI'])
-      @type = solr_doc['type']
-
+      @type = solr_doc['type'] if solr_doc['type']
       @doc = solr_doc
       @score = solr_doc['score']
       @score = @normal_score

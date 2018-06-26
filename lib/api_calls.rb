@@ -10,9 +10,10 @@ class APICalls
     @url.headers.merge!({"Authorization" => token})
   end
 
-  def count(type)
+  def count(type,filter=nil)
     if acceptable_count.include?(type)
       url_fragment = "/#{type}?rows=0"
+      url_fragment += "&filter=#{filter}" unless filter.nil?
       response = @url.get(url_fragment)
       JSON.parse(response.body)['message']['total-results']
     else
@@ -27,6 +28,7 @@ class APICalls
   end
 
   def query(query_params)
+
     url = "/works"
     @query_params = query_params
     process_query_params
@@ -34,9 +36,101 @@ class APICalls
     get_response(url)
   end
 
+  def index_stats(orcids = nil)
+    stats = []
+    hsh = {}
+    total_indexed_dois = count("works").to_i
+    books = []
+    book_types.each { |b|
+        books << filter_type_name(b)
+    }
+    books = books.join(",")
+    hsh["book_types"] = count("works",books).to_i
+    status_types.each { |f|
+      hsh[f] = count("works",filter_type_name(f)).to_i
+    }
+    total_dataset_result = hsh["Dataset"] + hsh["Component"]
+    total_dois_funding_data = count("works","has-funder:true")
+    total_dois_with_orcids = count("works","has-orcid:true")
+    stats << {
+      :value => total_indexed_dois,
+      :name => 'Total number of indexed DOIs',
+      :number => true
+    }
+
+    stats << {
+      :value => hsh["Journal Article"],
+      :name => 'Number of indexed journal articles',
+      :number => true
+    }
+
+    stats << {
+      :value => hsh["Conference Paper"],
+      :name => 'Number of indexed conference papers',
+      :number => true
+    }
+
+    stats << {
+      :value => hsh["book_types"],
+      :name => 'Number of indexed book-related DOIs',
+      :number => true
+    }
+
+    stats << {
+      :value => total_dataset_result,
+      :name => 'Number of indexed figure, component and dataset DOIs',
+      :number => true
+    }
+
+    stats << {
+      :value => hsh["Standard"],
+      :name => 'Number of indexed standards',
+      :number => true
+    }
+
+    stats << {
+      :value => hsh["Report"],
+      :name => 'Number of indexed reports',
+      :number => true
+    }
+
+    stats << {
+      :value => total_dois_funding_data,
+      :name => 'Total number of DOIs with funding data',
+      :number => true
+    }
+
+    stats << {
+      :value => total_dois_with_orcids,
+      :name => 'Number of indexed DOIs with associated ORCIDs',
+      :number => true
+    }
+    
+    if orcids
+      stats << {
+        :value => orcids.count({:query => {:updated => true}}),
+        :name => 'Number of ORCID records updated',
+        :number => true
+      }
+    end
+
+    stats
+  end
 
   private
+  def filter_type_name(type)
+    allowed_types = status_types + filter_types + book_types
+    "type-name:#{type}" if allowed_types.include?(type)
+  end
 
+  def status_types
+    ["Journal Article","Conference Paper","Standard","Report","Dataset","Component"]
+  end
+
+  def book_types
+    ['Book', 'Book Series', 'Book Set', 'Reference',
+     'Monograph', 'Chapter', 'Section', 'Part', 'Track', 'Entry']
+  end
   def process_query_params
     @rows = @query_params[:rows].to_i
     @page = @query_params[:page].to_i
@@ -71,7 +165,6 @@ class APICalls
     }
     case @query_params[:q]
     when /^doi\:/
-      search_param = @query_params[:q].split("doi:")[1]
       url += doi_works_query
     when /^issn\:/
       url = issn_journals_query
@@ -84,12 +177,12 @@ class APICalls
   end
 
   def keywords_works_query
-    "?query=#{@query_params[:q]}"
+    "?query=#{@query_params[:q]}&"
   end
 
   def doi_works_query
-    #search_param = @query_params[:q].split("doi:")[1]
-    #{}"/#{search_param}?"
+    search_param = @query_params[:q].split("doi:")[1]
+    #/#{search_param}?"
     "?query=#{search_param}"
   end
 

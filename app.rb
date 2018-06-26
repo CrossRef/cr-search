@@ -535,7 +535,7 @@ helpers do
   def splash_stats
     doi_num = settings.api.count("works")
     funders = settings.api.count("funders")
-    funding_dois = settings.api.call("works?filter=has-funder:true&rows=0")
+    funding_dois = settings.api.count("works","has-funder:true")
     {:dois => doi_num,
      :funding_dois => funding_dois,
      :funders => funders}
@@ -1143,7 +1143,7 @@ get '/help/status' do
     :page => {
       :branding => settings.crmds_branding,
       :query => '',
-      :stats => index_stats
+      :stats => settings.api.index_stats(settings.orcids)
     }
   }
 end
