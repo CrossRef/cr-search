@@ -247,13 +247,13 @@ helpers do
     query_info = query_type
     case query_info[:type]
     when :doi
-      "doi:\"http://dx.doi.org/#{query_info[:value]}\""
+      "doi:#{query_info[:value]}"
     when :short_doi
-      "doi:\"http://doi.org/#{query_info[:value]}\""
+      "doi:#{query_info[:value]}"
     when :issn
-      "issn:\"http://id.crossref.org/issn/#{query_info[:value]}\""
+      "issn:#{query_info[:value]}"
     when :orcid
-      "orcid:\"http://orcid.org/#{query_info[:value]}\""
+      "orcid:#{query_info[:value]}"
     else
       scrub_query(params['q'], false)
     end
@@ -324,7 +324,7 @@ helpers do
     terms = query_terms || '*:*'
     query = base_query.merge({:q => terms})
     fq = facet_query
-    query[:filter_query] = fq unless fq.empty?
+    query[:filter_query] = fq
     query
   end
 
@@ -427,7 +427,6 @@ helpers do
         profile_dois = orcid_record['dois']
       end
     end
-    #binding.pry
     solr_result['message']['items'].map do |solr_doc|
       doi = solr_doc['DOI']
       plain_doi = to_doi(doi)
