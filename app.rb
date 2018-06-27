@@ -541,137 +541,7 @@ helpers do
      :funders => funders}
   end
 
-  def index_stats
-    loc = settings.solr_select
-
-    count_result = settings.solr.get loc, :params => {
-      :q => '*:*',
-      :rows => 0
-    }
-    article_result = settings.solr.get loc, :params => {
-      :q => 'type:"Journal Article"',
-      :rows => 0
-    }
-    proc_result = settings.solr.get loc, :params => {
-      :q => 'type:"Conference Paper"',
-      :rows => 0
-    }
-    standard_result = settings.solr.get loc, :params => {
-      :q => 'type:"Standard"',
-      :rows => 0
-    }
-    report_result = settings.solr.get loc, :params => {
-      :q => 'type:"Report"',
-      :rows => 0
-    }
-    fundref_id_result = settings.solr.get loc, :params => {
-      :q => 'funder_doi:[* TO *]',
-      :rows => 0
-    }
-    fundref_result = settings.solr.get loc, :params => {
-      :q => 'funder_name:[* TO *] OR funder_doi:[* TO *] OR hl_grant:[* TO *] -hl_grant:""',
-      :rows => 0
-    }
-    orcid_result = settings.solr.get loc, :params => {
-      :q => 'orcid:[* TO *]',
-      :rows => 0
-    }
-
-    book_types = ['Book', 'Book Series', 'Book Set', 'Reference',
-                  'Monograph', 'Chapter', 'Section',
-                  'Part', 'Track', 'Entry']
-
-    book_result = settings.solr.get loc, :params => {
-      :q => book_types.map {|t| "type:\"#{t}\""}.join(' OR '),
-      :rows => 0
-    }
-
-    dataset_result = settings.solr.get loc, :params => {
-      :q => 'type:Dataset OR type:Component',
-      :rows => 0
-    }
-    oldest_result = settings.solr.get loc, :params => {
-      :q => 'year:[1600 TO *]',
-      :rows => 1,
-      :sort => 'year asc'
-    }
-
-    stats = []
-
-    stats << {
-      :value => count_result['response']['numFound'],
-      :name => 'Total number of indexed DOIs',
-      :number => true
-    }
-
-    stats << {
-      :value => article_result['response']['numFound'],
-      :name => 'Number of indexed journal articles',
-      :number => true
-    }
-
-    stats << {
-      :value => proc_result['response']['numFound'],
-      :name => 'Number of indexed conference papers',
-      :number => true
-    }
-
-    stats << {
-      :value => book_result['response']['numFound'],
-      :name => 'Number of indexed book-related DOIs',
-      :number => true
-    }
-
-    stats << {
-      :value => dataset_result['response']['numFound'],
-      :name => 'Number of indexed figure, component and dataset DOIs',
-      :number => true
-    }
-
-    stats << {
-      :value => standard_result['response']['numFound'],
-      :name => 'Number of indexed standards',
-      :number => true
-    }
-
-    stats << {
-      :value => report_result['response']['numFound'],
-      :name => 'Number of indexed reports',
-      :number => true
-    }
-
-    stats << {
-      :value => fundref_id_result['response']['numFound'],
-      :name => 'Number of work DOIs with funder DOIs',
-      :number => true
-    }
-
-    stats << {
-      :value => fundref_result['response']['numFound'],
-      :name => 'Total number of DOIs with funding data',
-      :number => true
-    }
-
-    stats << {
-      :value => orcid_result['response']['numFound'],
-      :name => 'Number of indexed DOIs with associated ORCIDs',
-      :number => true
-    }
-
-    stats << {
-      :value => oldest_result['response']['docs'].first['year'],
-      :name => 'Oldest indexed publication year'
-    }
-
-    stats << {
-      :value => settings.orcids.count({:query => {:updated => true}}),
-      :name => 'Number of ORCID records updated',
-      :number => true
-    }
-
-    stats
   end
-end
 
 before do
   set_after_signin_redirect(request.fullpath)
@@ -739,9 +609,8 @@ helpers do
         }
       else
         results = Parallel.map(citation_texts.take(MAX_MATCH_TEXTS),
-                               :in_processes => settings.links_process_count) do |citation_text|
+                               :in_processes => 1) do |citation_text|
           terms = scrub_query(citation_text, true)
-
           if terms.strip.empty?
             {
               :text => citation_text,
@@ -749,6 +618,7 @@ helpers do
               :match => false
             }
           else
+            binding.pry
             params = base_query.merge({:q => terms, :rows => 1})
             result = settings.solr.paginate 0, 1, settings.solr_select, :params => params
             match = result['response']['docs'].first

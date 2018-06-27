@@ -51,6 +51,7 @@ class APICalls
     }
     total_dataset_result = hsh["Dataset"] + hsh["Component"]
     total_dois_funding_data = count("works","has-funder:true")
+    total_works_funder_dois = count("works","has-funder-doi:true")
     total_dois_with_orcids = count("works","has-orcid:true")
     stats << {
       :value => total_indexed_dois,
@@ -93,6 +94,11 @@ class APICalls
       :name => 'Number of indexed reports',
       :number => true
     }
+    stats << {
+      :value => total_works_funder_dois,
+      :name => 'Number of work DOIs with funder DOIs',
+      :number => true
+    }
 
     stats << {
       :value => total_dois_funding_data,
@@ -105,7 +111,7 @@ class APICalls
       :name => 'Number of indexed DOIs with associated ORCIDs',
       :number => true
     }
-    
+
     if orcids
       stats << {
         :value => orcids.count({:query => {:updated => true}}),
@@ -169,7 +175,7 @@ class APICalls
     when /^issn\:/
       url = issn_journals_query
     when /^orcid\:/
-      url += "?filter=#{@query_params[:q]}"
+      url += "?filter=#{@query_params[:q]}&"
     else
       url += keywords_works_query
     end
@@ -182,8 +188,7 @@ class APICalls
 
   def doi_works_query
     search_param = @query_params[:q].split("doi:")[1]
-    #/#{search_param}?"
-    "?query=#{search_param}"
+    "?filter=#{@query_params[:q]}&"
   end
 
   def issn_journals_query
