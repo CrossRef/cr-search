@@ -609,7 +609,7 @@ helpers do
         }
       else
         results = Parallel.map(citation_texts.take(MAX_MATCH_TEXTS),
-                               :in_processes => 1) do |citation_text|
+                               :in_processes => settings.links_process_count) do |citation_text|
           terms = scrub_query(citation_text, true)
           if terms.strip.empty?
             {
@@ -618,11 +618,9 @@ helpers do
               :match => false
             }
           else
-            binding.pry
             params = base_query.merge({:q => terms, :rows => 1})
-            result = settings.solr.paginate 0, 1, settings.solr_select, :params => params
-            match = result['response']['docs'].first
-
+            result = settings.api.query(params)
+            match = result['message']['items'].first
             if citation_text.split.count < MIN_MATCH_TERMS
               {
                 :text => citation_text,
@@ -639,7 +637,7 @@ helpers do
               {
                 :text => citation_text,
                 :match => true,
-                :doi => match['doi'],
+                :doi => match['URL'],
                 :coins => search_results(result).first.coins,
                 :score => match['score'].to_f
               }

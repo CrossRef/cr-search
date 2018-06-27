@@ -9,21 +9,19 @@
       %span.lead= "Unable to match citations"
       %p= page[:reason]
 
-    - else  
+    - else
       %span.lead= "Queried for #{page[:results].count} references"
       %table.table.table-striped{:style => 'margin-top: 20px'}
         %tr
           %td Reference
-          %td Match score
+          %td URL
         - page[:results].each do |ref|
           - if ref[:match]
             %tr
+              %td= ref[:text]
               %td
-                %a{:href => ref[:doi]}= ref[:text]
-              %td= ref[:score]
+                %a{:href => ref[:doi]}= ref[:doi]
           - else
             %tr.error
               %td= ref[:text]
               %td= ref[:reason]
-
-    
