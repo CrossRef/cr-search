@@ -472,9 +472,7 @@ helpers do
   end
 
   def rest_funder_nesting m
-    #binding.pry
-    #m[m.keys.first]
-    m.select { |k,v| k != m.keys.first }
+    m[m.keys.first]
   end
 
   def render_funders m, names, indent, &block
@@ -485,19 +483,6 @@ helpers do
       else
         block.call(indent + 1, k, names[k], false)
         render_funders(m[k], names, indent + 1, &block)
-      end
-    end
-  end
-
-  def render_funders1 funders, indent, &block
-    funders.each_pair do |id,name|
-      if funders.keys.count == 1
-        block.call(indent + 1, id, name, false)
-        #block.call(indent + 1, k, names[k], true)
-      else
-        block.call(indent + 1, k, name, true)
-        new_hsh = funders.select { |k,v| v != id }
-        render_funders(new_hsh, names, indent + 1, &block)
       end
     end
   end
@@ -531,35 +516,17 @@ helpers do
     render_funders_full_children(indent, id, children, names, &block)
   end
 
-  def iterate_hsh(hsh,info,hierarchy=[])
-    nesting = {}
-    hsh.each_pair { |k,v|
-      nesting[:id] = k
-      nesting[:name] = info[k]
-      hierarchy << nesting
-      iterate_hsh(v,info,hierarchy) if v.is_a?(Hash)
-    }
-    hierarchy
-  end
-
   def funder_doi_from_id id
     query = settings.api.get_funder_info(id)
     dois = []
     funder_hsh = {}
     funder_hsh[:id] = query["id"]
     funder_hsh[:primary_name_display] = query["name"]
-    funder_hsh[:hierarchy] = []
-    funder_hsh[:hierarchy] = iterate_hsh(query['hierarchy'],query['hierarchy-names'])
     dois = [funder_hsh[:id]]
     dois << query["descendants"] if query.key?("descendants")
     dois.flatten! if dois.count > 1
-    funder_hsh[:nesting] = {}
-    funder_hsh[:nesting_names] = {}
-    funder_hsh[:hierarchy].each { |h|
-      funder_hsh[:nesting][h[:id]] = h[:name]
-      funder_hsh[:nesting_names][h[:id]] = h[:name]
-    }
-    funder_hsh.delete(:hierarchy)
+    funder_hsh[:nesting] = query['hierarchy']
+    funder_hsh[:nesting_names] = query['hierarchy-names']
     [dois,funder_hsh]
   end
 
