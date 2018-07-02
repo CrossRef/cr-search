@@ -322,16 +322,30 @@ helpers do
 
   def search_query
     terms = query_terms || '*:*'
-    query = base_query.merge({:q => terms})
+    chk_query = process_search_query terms
+    query = chk_query.empty? ? base_query.merge({:q => terms}) : base_query.merge(chk_query)
     fq = facet_query
-    query[:filter_query] = fq
+    if query.key?(:filter_query)
+      query[:filter_query] += fq unless fq.empty?
+    else
+      query[:filter_query] = fq unless fq.empty?
+    end
     query
   end
 
+  def process_search_query terms
+    query = {}
+    case terms
+    when /^orcid\:/,/^doi\:/
+      query[:filter_query] = [terms]
+    end
+    query
+  end
   def fundref_doi_query funder_dois, prefixes=nil
-
     doi_q = funder_dois.map {|doi| "funder:#{doi}" }
-    query = {:q => doi_q.join(",")}
+    query = {}
+    query[:filter_query] = doi_q
+    #query = {:q => doi_q.join(",")}
     query = base_query.merge(query)
 
     if prefixes
@@ -339,9 +353,8 @@ helpers do
       prefix_q = prefixes.map {|prefix| "owner_prefix:\"#{prefix}\""}.join(' OR ')
       query[:q] = "(#{query[:q]}) AND (#{prefix_q})"
     end
-
     fq = facet_query
-    query[:filter_query] = fq unless fq.empty?
+    query[:filter_query] += fq unless fq.empty?
     query
   end
 
@@ -587,19 +600,12 @@ helpers do
       id = params['q']
       funder_dois,funder = funder_doi_from_id(params['q'])
       solr_result = select(fundref_doi_query(funder_dois))
-      #funder = settings.funders.find_one({:uri => funder_dois.first})
-      #funder_info = {
-        #:nesting => funder['nesting'],
-        #:nesting_names => funder['nesting_names'],
-        #:id => funder['id']
-      #}
       page = result_page(solr_result)
       page[:bare_query] = funder[:primary_name_display]
       page[:query] = scrub_query(page[:bare_query], false)
       haml :results, :locals => {
         :page => {
           :branding => branding,
-          #:id => id,
           :funder => funder
         }.merge(page)
       }
@@ -629,6 +635,8 @@ helpers do
             params = base_query.merge({:q => terms, :rows => 1})
             result = settings.api.query(params)
             match = result['message']['items'].first
+            # processing doi url to match with Crossref doi display guideline
+            match['URL'].sub!("http://dx.","https://")
             if citation_text.split.count < MIN_MATCH_TERMS
               {
                 :text => citation_text,

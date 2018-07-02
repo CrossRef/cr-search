@@ -32,10 +32,12 @@ class APICalls
     rsp['message']
   end
   def query(query_params)
-    url = "/works"
+    query_url = {}
+    query_url[:query] = works_url
     @query_params = query_params
     process_query_params
-    url = query_type(url)
+    url = query_type(query_url)
+    url = url[:query]+"?"+url[:remaining_url]
     get_response(url)
   end
 
@@ -127,6 +129,9 @@ class APICalls
   end
 
   private
+  def works_url
+    "/works"
+  end
   def filter_type_name(type)
     allowed_types = status_types + filter_types + book_types
     "type-name:#{type}" if allowed_types.include?(type)
@@ -167,38 +172,32 @@ class APICalls
     JSON.parse(rsp.body)
   end
 
-  def query_type(url)
+  def query_type(url_hsh)
     url_array = []
+    url = ""
     @query_params.each_pair { |f,v|
-      url_array << "#{f}=#{v}" unless f == :q
+      field = f == :q ? "query" : f
+      if f == :q && v =~ /^issn\:/
+        url_hsh[:query] = issn_journals_query
+      else
+        url_array << "#{field}=#{v}"
+      end
     }
-    case @query_params[:q]
-    when /^issn\:/
-      url = issn_journals_query
-    when /^orcid\:/,/^doi\:/,/^funder\:/
-      url += filter_works_query
-    else
-      url += keywords_works_query
-    end
-    url += url_array.join("&")
+    url_hsh[:remaining_url] = url_array.join("&")
+    url_hsh
   end
 
   def keywords_works_query
-    "?query=#{@query_params[:q]}&"
+    "query=#{@query_params[:q]}"
   end
 
   def filter_works_query
-    "?filter=#{@query_params[:q]}&"
-  end
-
-  def doi_works_query
-    search_param = @query_params[:q].split("doi:")[1]
-    "?filter=#{@query_params[:q]}&"
+    "filter=#{@query_params[:q]}&"
   end
 
   def issn_journals_query
     search_param = @query_params[:q].split("issn:")[1]
-    "/journals/#{search_param}/works?"
+    "/journals/#{search_param}/works"
   end
 
   def acceptable_count
@@ -237,7 +236,7 @@ class APICalls
 
 
   def filter_types
-    ["type-name","published","container-title"]
+    ["type-name","published","container-title","funder","doi","orcid"]
   end
 
   def query_field_names
