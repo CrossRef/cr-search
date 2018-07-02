@@ -328,10 +328,11 @@ helpers do
     query
   end
 
-  def fundref_doi_query funder_dois, prefixes
+  def fundref_doi_query funder_dois, prefixes=nil
 
-    doi_q = funder_dois.map {|doi| "funder_doi:\"#{doi}\""}.join(' OR ')
-    query = base_query.merge({:q => doi_q})
+    doi_q = funder_dois.map {|doi| "funder:#{doi}" }
+    query = {:q => doi_q.join(",")}
+    query = base_query.merge(query)
 
     if prefixes
       prefixes = prefixes.map {|prefix| "http://id.crossref.org/prefix/#{prefix}"}
@@ -340,7 +341,7 @@ helpers do
     end
 
     fq = facet_query
-    query['fq'] = fq unless fq.empty?
+    query[:filter_query] = fq unless fq.empty?
     query
   end
 
@@ -471,7 +472,9 @@ helpers do
   end
 
   def rest_funder_nesting m
-    m[m.keys.first]
+    #binding.pry
+    #m[m.keys.first]
+    m.select { |k,v| k != m.keys.first }
   end
 
   def render_funders m, names, indent, &block
@@ -482,6 +485,19 @@ helpers do
       else
         block.call(indent + 1, k, names[k], false)
         render_funders(m[k], names, indent + 1, &block)
+      end
+    end
+  end
+
+  def render_funders1 funders, indent, &block
+    funders.each_pair do |id,name|
+      if funders.keys.count == 1
+        block.call(indent + 1, id, name, false)
+        #block.call(indent + 1, k, names[k], true)
+      else
+        block.call(indent + 1, k, name, true)
+        new_hsh = funders.select { |k,v| v != id }
+        render_funders(new_hsh, names, indent + 1, &block)
       end
     end
   end
@@ -515,12 +531,36 @@ helpers do
     render_funders_full_children(indent, id, children, names, &block)
   end
 
-  def funder_doi_from_id id
-    dois = ["http://dx.doi.org/10.13039/#{id}"]
+  def iterate_hsh(hsh,info,hierarchy=[])
+    nesting = {}
+    hsh.each_pair { |k,v|
+      nesting[:id] = k
+      nesting[:name] = info[k]
+      hierarchy << nesting
+      iterate_hsh(v,info,hierarchy) if v.is_a?(Hash)
+    }
+    hierarchy
+  end
 
-    dois += settings.funders.find_one({:id => id})['descendants'].map do |id|
-      "http://dx.doi.org/10.13039/#{id}"
-    end
+  def funder_doi_from_id id
+    query = settings.api.get_funder_info(id)
+    dois = []
+    funder_hsh = {}
+    funder_hsh[:id] = query["id"]
+    funder_hsh[:primary_name_display] = query["name"]
+    funder_hsh[:hierarchy] = []
+    funder_hsh[:hierarchy] = iterate_hsh(query['hierarchy'],query['hierarchy-names'])
+    dois = [funder_hsh[:id]]
+    dois << query["descendants"] if query.key?("descendants")
+    dois.flatten! if dois.count > 1
+    funder_hsh[:nesting] = {}
+    funder_hsh[:nesting_names] = {}
+    funder_hsh[:hierarchy].each { |h|
+      funder_hsh[:nesting][h[:id]] = h[:name]
+      funder_hsh[:nesting_names][h[:id]] = h[:name]
+    }
+    funder_hsh.delete(:hierarchy)
+    [dois,funder_hsh]
   end
 
   def test_doi? doi
@@ -576,23 +616,24 @@ helpers do
       content_type 'text/csv'
       csv_response
     else
-      funder_dois = funder_doi_from_id(params['q'])
-      solr_result = select(fundref_doi_query(funder_dois, prefixes))
-      funder = settings.funders.find_one({:uri => funder_dois.first})
-      funder_info = {
-        :nesting => funder['nesting'],
-        :nesting_names => funder['nesting_names'],
-        :id => funder['id']
-      }
+      funder_info = {}
+      id = params['q']
+      funder_dois,funder = funder_doi_from_id(params['q'])
+      solr_result = select(fundref_doi_query(funder_dois))
+      #funder = settings.funders.find_one({:uri => funder_dois.first})
+      #funder_info = {
+        #:nesting => funder['nesting'],
+        #:nesting_names => funder['nesting_names'],
+        #:id => funder['id']
+      #}
       page = result_page(solr_result)
-
-      page[:bare_query] = funder['primary_name_display']
+      page[:bare_query] = funder[:primary_name_display]
       page[:query] = scrub_query(page[:bare_query], false)
-
       haml :results, :locals => {
         :page => {
           :branding => branding,
-          :funder => funder_info
+          #:id => id,
+          :funder => funder
         }.merge(page)
       }
     end

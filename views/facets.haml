@@ -58,7 +58,7 @@
         %h6
           %a{:href => "#{page[:branding][:search_action]}?q=#{top_funder_id}"}
             = render_top_funder_name(page[:funder][:nesting], page[:funder][:nesting_names])
-    - render_funders(rest_funder_nesting(page[:funder][:nesting]), page[:funder][:nesting_names], 0) do |indent, id, name, more|
+    - render_funders1(rest_funder_nesting(page[:funder][:nesting]), 0) do |indent, id, name, more|
       .funder{:class => "funder-level#{indent}", :style => "margin-left:#{(indent - 1) * 20}px;"}
         - if more
           .pull-right
