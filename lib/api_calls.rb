@@ -21,14 +21,17 @@ class APICalls
     end
   end
 
-  def call(url_fragment)
-    url = "/#{url_fragment}"
-    response = @url.get(url_fragment)
-    JSON.parse(response.body)['message']['total-results']
+  def call(query)
+    response = @url.get(query)
+    JSON.parse(response.body)['message']
   end
 
+  def get_funder_info(id)
+    query = "/funders/#{id}"
+    rsp = get_response(query)
+    rsp['message']
+  end
   def query(query_params)
-
     url = "/works"
     @query_params = query_params
     process_query_params
@@ -170,12 +173,10 @@ class APICalls
       url_array << "#{f}=#{v}" unless f == :q
     }
     case @query_params[:q]
-    when /^doi\:/
-      url += doi_works_query
     when /^issn\:/
       url = issn_journals_query
-    when /^orcid\:/
-      url += "?filter=#{@query_params[:q]}&"
+    when /^orcid\:/,/^doi\:/,/^funder\:/
+      url += filter_works_query
     else
       url += keywords_works_query
     end
@@ -184,6 +185,10 @@ class APICalls
 
   def keywords_works_query
     "?query=#{@query_params[:q]}&"
+  end
+
+  def filter_works_query
+    "?filter=#{@query_params[:q]}&"
   end
 
   def doi_works_query
