@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe "routes and expected results", vcr: true do
-  context "renders the splash page with a search bar and the number of indexed works" do
+describe "actions with the splash page", vcr: true do
+  #context "renders the splash page with a search bar and the number of indexed works" do
     before(:each) do
       visit '/'
     end
@@ -15,5 +15,5 @@ describe "routes and expected results", vcr: true do
       number = page.find("//span[@class = 'number']").text.to_i
       expect(number).to be > 0
     end
-  end
+  #end
 end
