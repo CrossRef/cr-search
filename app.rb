@@ -45,7 +45,7 @@ configure do
 
   # Work around rack protection referrer bug
   set :protection, :except => :json_csrf
-
+  set :app_file, __FILE__
   # Configure solr
   set :solr, settings.api_url
   set :api_token, ENV['CROSSREF_API_TOKEN']
