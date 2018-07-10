@@ -20,3 +20,13 @@ gem 'rake'
 gem 'parallel'
 gem 'unicorn'
 gem 'pry'
+
+group :test do
+  gem 'rspec'
+  gem 'capybara'
+  gem 'capybara-screenshot'
+  gem 'factory_girl'
+  gem 'poltergeist'
+  gem 'webmock'
+  gem 'vcr'
+end
