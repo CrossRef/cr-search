@@ -1,5 +1,17 @@
-web:
-  build: .
-  command: bundle exec unicorn -p 3000 -d -c unicorn.rb
-  ports:
-    - 80:3000
+version: '3'
+
+services:
+  mongo:
+    image: 'mongo'
+    ports:
+    - "27017:27017"
+  web:
+    image: eshadatta/crmds_demo
+    build: .
+    command: bundle exec unicorn -p 3000 -d -c unicorn.rb
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+    environment:
+      - CROSSREF_API_TOKEN=${CROSSREF_API_TOKEN}
