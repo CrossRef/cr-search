@@ -16,7 +16,7 @@ describe "actions on the results page", vcr: true do
       expect(query).to eq("josiah carberry")
     end
     it 'outputs page number and number of results' do
-      expect(page).to have_css("h6.number", text: "Page 1 of 5617 results")
+      expect(page).to have_css("h6.number", text: "Page 1 of 2604 results")
     end
     it 'outputs 10 results on first page' do
       expect(page).to have_css("td.item-data", count: 10)
