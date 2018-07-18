@@ -6,6 +6,7 @@
   "orcid_token_url": "https://api.orcid.org/oauth/token",
   "orcid_import_callback": "<%= orcid_import_callback %>",
   "api_url": "https://api.crossref.org/v1",
+  "orcid_redirect_uri": "<%= orcid_redirect_uri %>",
   "solr_url": "https://api.crossref.org/",
   "solr_select": "/works",
   "mongo_host": "mongo",
