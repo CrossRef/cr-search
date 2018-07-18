@@ -48,8 +48,6 @@ configure do
   set :app_file, __FILE__
   # Configure solr
   set :solr, settings.api_url
-  set :api_token, ENV['CROSSREF_API_TOKEN']
-  set :api, APICalls.new(settings.api_url, settings.api_token)
   # Configure mongo
   set :mongo, Mongo::Connection.new(settings.mongo_host)
   set :dois, settings.mongo[settings.mongo_db]['dois']
@@ -93,10 +91,6 @@ configure do
   # Orcid endpoint
   set :orcid_service, Faraday.new(:url => settings.orcid_site)
 
-  # Crossref API endpoint
-  set :api_service, Faraday.new(settings.api_url)
-
-
   # Orcid oauth2 object we can use to make API calls
   set :orcid_oauth, OAuth2::Client.new(settings.orcid_client_id,
                                        settings.orcid_client_secret,
@@ -112,7 +106,7 @@ configure do
   use OmniAuth::Builder do
    provider :orcid, settings.orcid_client_id, settings.orcid_client_secret, :client_options => {
               :site => settings.orcid_site,
-              #:redirect_uri => settings.orcid_redirect_uri,
+              :redirect_uri => settings.orcid_redirect_uri,
               :authorize_url => settings.orcid_authorize_url,
               :token_url => settings.orcid_token_url,
               :scope => '/read-limited /activities/update'
@@ -200,12 +194,24 @@ helpers do
     end
   end
 
+  def check_params
+    api_url = settings.api_url
+    api_token = ENV["CROSSREF_API_TOKEN"].nil? ? nil : ENV["CROSSREF_API_TOKEN"]
+    if params.has_key?("base_uri") && not(params["base_uri"].nil?)
+      # remove trailing slash
+      standardized_url = params["base_uri"] =~ /.*\/$/ ? params["base_uri"].chop : params["base_uri"]
+      api_url = standardized_url
+      api_token = nil
+    end
+    @api = APICalls.new(api_url,api_token)
+  end
+
   def select query_params
 
     page = [query_page, 10].min
     rows = query_rows
     query_params.merge!(:page => page)
-    results = settings.api.query(query_params)
+    results = @api.query(query_params)
   end
 
   def select_all query_params
@@ -530,7 +536,7 @@ helpers do
   end
 
   def funder_doi_from_id id
-    query = settings.api.get_funder_info(id)
+    query = @api.get_funder_info(id)
     dois = []
     funder_hsh = {}
     funder_hsh[:id] = query["id"]
@@ -549,13 +555,13 @@ helpers do
   end
 
   def funder_count
-    settings.api.count("funders")
+    @api.count("funders")
   end
 
   def splash_stats
-    doi_num = settings.api.count("works")
-    funders = settings.api.count("funders")
-    funding_dois = settings.api.count("works","has-funder:true")
+    doi_num = @api.count("works")
+    funders = @api.count("funders")
+    funding_dois = @api.count("works","has-funder:true")
     {:dois => doi_num,
      :funding_dois => funding_dois,
      :funders => funders}
@@ -564,6 +570,7 @@ helpers do
   end
 
 before do
+  check_params
   set_after_signin_redirect(request.fullpath)
 end
 
@@ -633,7 +640,7 @@ helpers do
             }
           else
             params = base_query.merge({:q => terms, :rows => 1})
-            result = settings.api.query(params)
+            result = @api.query(params)
             match = result['message']['items'].first
             # processing doi url to match with Crossref doi display guideline
             match['URL'].sub!("http://dx.","https://")
@@ -1027,7 +1034,7 @@ get '/help/status' do
     :page => {
       :branding => settings.crmds_branding,
       :query => '',
-      :stats => settings.api.index_stats(settings.orcids)
+      :stats => @api.index_stats(settings.orcids)
     }
   }
 end

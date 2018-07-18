@@ -7,7 +7,8 @@ class APICalls
   FACET_RESULT_COUNT = 10
   def initialize(url,token=nil)
     @url = Faraday.new(url)
-    @url.headers.merge!({"Authorization" => token})
+    auth_header = {"Authorization" => token}
+    @url.headers.merge!(auth_header) unless token.nil?
   end
 
   def count(type,filter=nil)
@@ -176,7 +177,7 @@ class APICalls
     url_array = []
     url = ""
     @query_params.each_pair { |f,v|
-      field = f == :q ? "query" : f
+      field = f == :q ? "query.bibliographic" : f
       if f == :q && v =~ /^issn\:/
         url_hsh[:query] = issn_journals_query
       else
@@ -188,7 +189,7 @@ class APICalls
   end
 
   def keywords_works_query
-    "query=#{@query_params[:q]}"
+    "query.bibliographic=#{@query_params[:q]}"
   end
 
   def filter_works_query
