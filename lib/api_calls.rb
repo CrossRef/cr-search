@@ -172,7 +172,7 @@ class APICalls
   def get_response(url)
     rsp = @url.get(url)
     results = JSON.parse(rsp.body)
-    results["message"]["facets"].keep_if { |k,v| @facet_fields.include? k }
+    results["message"]["facets"].keep_if { |k,v| @facet_fields.include? k } if results["message"].has_key?("facets")
     results
   end
 
