@@ -1127,7 +1127,12 @@ get '/orcid/sync' do
 end
 
 get '/dois' do
-  solr_result = select(search_query)
+  qp = {
+    :rows => query_rows,
+    :page => query_page,
+  }
+  qp.merge!({:q => params['q']}) if params.key?('q')
+  solr_result = @api.query(qp)
   items = search_results(solr_result).map do |result|
     {
       :doi => result.doi,
@@ -1144,8 +1149,8 @@ get '/dois' do
 
   if ['true', 't', '1'].include?(params[:header])
     page = {
-      :totalResults => solr_result['response']['numFound'],
-      :startIndex => solr_result['response']['start'],
+      :totalResults => solr_result['message']['total-results'],
+      :startIndex => solr_result['message']['query']['start-index'],
       :itemsPerPage => query_rows,
       :query => {
         :searchTerms => params['q'],
