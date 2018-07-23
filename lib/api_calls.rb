@@ -162,18 +162,15 @@ class APICalls
     offset = @page > 1 ? get_offset : nil
     @query_params.merge!(:offset => offset) unless offset.nil?
     @facet_fields = @query_params[:facet]
-    #facets = explode_facets
-    #facet_url = facets.join(",")
-    # optimizing query by requesting all and then deleting unwanted facet values
-    @query_params[:facet] = "*:#{FACET_RESULT_COUNT}"
+    facets = explode_facets
+    facet_url = facets.join(",")
+    @query_params[:facet] = facet_url
   end
 
 
   def get_response(url)
     rsp = @url.get(url)
-    results = JSON.parse(rsp.body)
-    results["message"]["facets"].keep_if { |k,v| @facet_fields.include? k }
-    results
+    JSON.parse(rsp.body)
   end
 
   def query_type(url_hsh)
