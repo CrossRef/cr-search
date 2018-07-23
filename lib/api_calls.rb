@@ -28,13 +28,43 @@ class APICalls
   end
 
   def get_funder_info(id)
-    query = "/funders/#{id}"
+    query = "#{funders_url}/#{id}"
     rsp = get_response(query)
     rsp['message']
   end
+
+  def get_funder_id_works(id,query_params)
+=begin
+    url = nil
+    query_url = {}
+    query_url[:query] = "#{funders_url}/#{id}#{works_url}"
+    @query_params = query_params
+    process_query_params
+    url = query_type(query_url)
+    url = url[:query]+"?"+url[:remaining_url]
+    rsp = get_response(url)
+=end
+    url = "#{funders_url}/#{id}#{works_url}"
+    rsp = handle_query(url,query_params)
+    rsp['message']
+  end
+
   def query(query_params)
+    handle_query(works_url,query_params)
+=begin
     query_url = {}
     query_url[:query] = works_url
+    @query_params = query_params
+    process_query_params
+    url = query_type(query_url)
+    url = url[:query]+"?"+url[:remaining_url]
+    get_response(url)
+=end
+  end
+
+  def handle_query(url,query_params)
+    query_url = {}
+    query_url[:query] = url
     @query_params = query_params
     process_query_params
     url = query_type(query_url)
@@ -133,6 +163,10 @@ class APICalls
   def works_url
     "/works"
   end
+
+  def funders_url
+    "/funders"
+  end
   def filter_type_name(type)
     allowed_types = status_types + filter_types + book_types
     "type-name:#{type}" if allowed_types.include?(type)
@@ -161,10 +195,12 @@ class APICalls
     @query_params.delete(:page)
     offset = @page > 1 ? get_offset : nil
     @query_params.merge!(:offset => offset) unless offset.nil?
-    @facet_fields = @query_params[:facet]
-    facets = explode_facets
-    facet_url = facets.join(",")
-    @query_params[:facet] = facet_url
+    if @query_params[:facet]
+      @facet_fields = @query_params[:facet]
+      facets = explode_facets
+      facet_url = facets.join(",")
+      @query_params[:facet] = facet_url
+    end
   end
 
 
