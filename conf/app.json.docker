@@ -7,6 +7,7 @@
   "orcid_import_callback": "<%= orcid_import_callback %>",
   "api_url": "https://api.crossref.org/v1",
   "api_documentation": "https://api.crossref.org",
+  "api_dashboard": "https://www.crossref.org/dashboard/",
   "orcid_redirect_uri": "<%= orcid_redirect_uri %>",
   "solr_url": "https://api.crossref.org/",
   "solr_select": "/works",
