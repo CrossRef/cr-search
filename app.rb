@@ -1011,12 +1011,7 @@ post '/references' do
 end
 
 get '/help/api' do
-  haml :api_help, :locals => {
-    :page => {
-      :query => '',
-      :branding => settings.crmds_branding
-    }
-  }
+  redirect settings.api_documentation
 end
 
 get '/help/search' do
