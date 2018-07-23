@@ -461,10 +461,13 @@ helpers do
   end
 
   def result_publication_date record
-    year = record['hl_year'].to_i
-    month = record['month'] || 1
-    day = record['day'] || 1
-    Date.new(year, month, day)
+    published = record["published-print"] || record["published-online"]
+    published = published["date-parts"].join("-")
+    #year = record[""]
+    #year = record['hl_year'].to_i
+    #month = record['month'] || 1
+    #day = record['day'] || 1
+    published
   end
 
   def scrub_query query_str, remove_short_operators
@@ -728,28 +731,24 @@ end
 
 get '/funders/:id/dois' do
   funder_id = params[:id]
-  funder_doi = funder_doi_from_id(funder_id).first
-
-  params = {
-    :fl => 'doi,deposited_at,hl_year,month,day',
-    :q => "funder_doi:\"#{funder_doi}\"",
+  funder_doi = funder_doi_from_id(funder_id).first.first #returns an array of dois
+  qp = {
     :rows => query_rows,
-    :sort => 'deposited_at desc'
+    :page => query_page
   }
-  result = settings.solr.paginate(query_page, query_rows,
-                                  settings.solr_select, :params => params)
+  result = @api.get_funder_id_works(funder_doi,qp)
 
-  items = result['response']['docs'].map do |r|
+  items = result['items'].map do |r|
     {
-      :doi => r['doi'],
-      :deposited => Date.parse(r['deposited_at']),
+      :doi => r['URL'].sub("http://dx.","https://"),
+      :deposited => r['deposited']['date-parts'].join("-"),
       :published => result_publication_date(r)
     }
   end
 
   page = {
-    :totalResults => result['response']['numFound'],
-    :startIndex => result['response']['start'],
+    :totalResults => result['total-results'],
+    :startIndex => result['query']['start-index'],
     :itemsPerPage => query_rows,
     :query => {
       :searchTerms => funder_id,
