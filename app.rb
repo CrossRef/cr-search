@@ -1024,13 +1024,7 @@ get '/help/search' do
 end
 
 get '/help/status' do
-  haml :status_help, :locals => {
-    :page => {
-      :branding => settings.crmds_branding,
-      :query => '',
-      :stats => @api.index_stats(settings.orcids)
-    }
-  }
+  redirect settings.api_dashboard
 end
 
 get '/orcid/activity' do

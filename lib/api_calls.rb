@@ -34,16 +34,6 @@ class APICalls
   end
 
   def get_funder_id_works(id,query_params)
-=begin
-    url = nil
-    query_url = {}
-    query_url[:query] = "#{funders_url}/#{id}#{works_url}"
-    @query_params = query_params
-    process_query_params
-    url = query_type(query_url)
-    url = url[:query]+"?"+url[:remaining_url]
-    rsp = get_response(url)
-=end
     url = "#{funders_url}/#{id}#{works_url}"
     rsp = handle_query(url,query_params)
     rsp['message']
@@ -51,15 +41,6 @@ class APICalls
 
   def query(query_params)
     handle_query(works_url,query_params)
-=begin
-    query_url = {}
-    query_url[:query] = works_url
-    @query_params = query_params
-    process_query_params
-    url = query_type(query_url)
-    url = url[:query]+"?"+url[:remaining_url]
-    get_response(url)
-=end
   end
 
   def handle_query(url,query_params)
