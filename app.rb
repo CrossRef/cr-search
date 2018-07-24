@@ -875,17 +875,17 @@ get '/funders/prefixes' do
 end
 
 get '/funders/:id' do
-  funder = settings.funders.find_one({:id => params[:id]})
+  id = params["id"]
+  funder = @api.get_funder_info(id)
   if funder
     page = {
       :id => funder['id'],
-      :country => funder['country'],
-      :uri => funder['uri'],
-      :parent => funder['parent'],
-      :children => funder['children'],
-      :affiliated => funder['affiliated'],
-      :name => funder['primary_name_display'],
-      :alt => funder['other_names_display']
+      :country => funder['location'],
+      :uri => funder['uri'].sub("http://dx.","https://"),
+      :parent => @api.get_funder_parent(funder['hierarchy'],id),
+      :children => funder['descendants'],
+      :name => funder['name'],
+      :alt => funder['alt-names']
     }
     content_type 'application/json'
     JSON.pretty_generate(page)
