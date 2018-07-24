@@ -33,6 +33,21 @@ class APICalls
     rsp['message']
   end
 
+  def get_funder_parent(hierarchy,id)
+  parent = nil
+  if hierarchy.keys[0] == id
+  else
+    hierarchy.values[0].each_pair { |k,v|
+      if k == id
+        parent = hierarchy.keys[0]
+      elsif v.key?(id)
+        parent = k
+      end
+    }
+  end
+  parent
+  end
+
   def get_funder_id_works(id,query_params)
     url = "#{funders_url}/#{id}#{works_url}"
     rsp = handle_query(url,query_params)
