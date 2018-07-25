@@ -801,26 +801,27 @@ get '/funders/hierarchy' do
 end
 
 get '/funders/dois' do
-  params = {
-    :fl => 'doi,deposited_at,hl_year,month,day',
-    :q => 'funder_name:[* TO *]',
-    :rows => query_rows,
-    :sort => 'deposited_at desc'
-  }
-  result = settings.solr.paginate(query_page, query_rows,
-                                  settings.solr_select, :params => params)
 
-  items = result['response']['docs'].map do |r|
+  params = {
+    :filter => 'has-funder:true',
+    :rows => query_rows,
+    :sort => 'deposited',
+    :page => query_page,
+    :order => 'desc'
+  }
+  result = @api.call("/works", params)
+
+  items = result['items'].map do |r|
     {
-      :doi => r['doi'],
-      :deposited => Date.parse(r['deposited_at']),
+      :doi => r['URL'].sub("http://dx.","https://"),
+      :deposited => r["deposited"]["date-parts"].join("-"),
       :published => result_publication_date(r)
     }
   end
 
   page = {
-    :totalResults => result['response']['numFound'],
-    :startIndex => result['response']['start'],
+    :totalResults => result['total-results'],
+    :startIndex => result['query']['start-index'],
     :itemsPerPage => query_rows,
     :query => {
       :searchTerms => '',

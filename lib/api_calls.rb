@@ -22,9 +22,30 @@ class APICalls
     end
   end
 
-  def call(query)
-    response = @url.get(query)
-    JSON.parse(response.body)['message']
+  def call(route,params = nil)
+    current_routes = [works_url,funders_url]
+    query = []
+    if current_routes.include?(route)
+      unless params.nil? && params.is_a?(Hash)
+        if params.key?(:page)
+          @page = params[:page]
+          @rows = params[:rows] if params.key?(:rows)
+          if params[:page] > 1
+            params[:offset] = get_offset
+          end
+        end
+        params.delete(:page)
+        params.each_pair { |field,value|
+          query << "#{field}=#{value}"
+        }
+      end
+      url = "#{route}"
+      url += "?#{query.join("&")}" unless query.count == 0
+      response = @url.get(url)
+      JSON.parse(response.body)['message']
+    else
+      "ERROR: incorrect route: #{route}"
+    end
   end
 
   def get_funder_info(id)
@@ -176,6 +197,7 @@ class APICalls
     ['Book', 'Book Series', 'Book Set', 'Reference',
      'Monograph', 'Chapter', 'Section', 'Part', 'Track', 'Entry']
   end
+
   def process_query_params
     @rows = @query_params[:rows].to_i
     @page = @query_params[:page].to_i
