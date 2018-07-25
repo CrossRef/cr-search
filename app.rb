@@ -1053,15 +1053,15 @@ get '/orcid/claim' do
     if already_added
       status = 'ok'
     else
-      # TODO escape DOI characters
+      # TODO: escape doi arg
       params = {
-        :q => "doi:\"#{doi}\"",
-        :fl => '*'
+        :filter => "doi:#{query}",
       }
-      result = settings.solr.paginate 0, 1, settings.solr_select, :params => params
-      doi_record = result['response']['docs'].first
+      result = @api.call("/works", params)
+      doi_record = nil
+      doi_record = result['items'].first if result.key?("items")
 
-      if !doi_record
+      if doi_record.nil?
         status = 'no_such_doi'
       else
         if OrcidClaim.perform(session_info, doi_record)
