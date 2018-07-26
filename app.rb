@@ -930,20 +930,27 @@ configure do
               }
               if descendants
                 funder_info = @api.get_funder_info(result['id'])
-                base.merge({:descendants => result['descendants'], :descendant_names => result['descendant_names']})
+                h_names = funder_info["hierarchy-names"]
+                d_names = {}
+                if funder_info['descendants'].count > 0
+                  funder_info['descendants'].each { |id|
+                    d_names[id] = h_names[id]
+                  }
+                end
+                base.merge({:descendants => funder_info['descendants'], :descendant_names => d_names})
               else
                 base
               end
             end
           end
-
-          content_type 'application/json'
-          unless datums.nil?
-            JSON.pretty_generate(datums)
-          else
-            results["message"]
-          end
         end
+        content_type 'application/json'
+        unless datums.nil?
+          JSON.pretty_generate(datums)
+        else
+          JSON.pretty_generate(results)
+        end
+
       end
 
       get '/orcids/prefixes' do
