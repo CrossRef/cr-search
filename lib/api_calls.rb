@@ -51,7 +51,7 @@ class APICalls
   def get_funder_info(id)
     query = "#{funders_url}/#{id}"
     rsp = get_response(query)
-    rsp['message']
+    rsp
   end
 
   def get_funder_parent(hierarchy,id)
@@ -224,7 +224,18 @@ class APICalls
 
   def get_response(url)
     rsp = @url.get(url)
-    JSON.parse(rsp.body)
+    chk_response(rsp.body)
+  end
+
+  def chk_response(rsp)
+    result = nil
+    case rsp
+    when /status/
+      result = JSON.parse(rsp)
+    else
+      result = rsp
+    end
+    result
   end
 
   def query_type(url_hsh)
