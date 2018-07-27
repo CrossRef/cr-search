@@ -216,9 +216,8 @@ configure do
 
       def select_all query_params
 
-        query_params[:rows] = 60000000
-        query_params[:page] = 0
-        results = settings.solr.get settings.solr_select, :params => query_params
+        query_params[:rows] = 1000
+        results = @api.query(query_params)
       end
 
       def response_format
@@ -564,6 +563,23 @@ configure do
         @api.count("funders")
       end
 
+      def get_all_results(qp)
+        @api.call("/funders/#{params['q']}/works",qp)
+      end
+
+      def iterate_results(total_pages,qp,results = [])
+        page = qp[:page].to_i
+        if page <= total_pages
+          sr = get_all_results(qp)
+          results << search_results(sr)
+          qp[:page] = page + 1
+          qp.delete(:offset)
+          iterate_results(total_pages,qp,results)
+        else
+          results.flatten!
+        end
+      end
+
       def splash_stats
         doi_num = @api.count("works")
         funders = @api.count("funders")
@@ -587,14 +603,24 @@ configure do
           if !params.has_key?('q')
             haml :splash, :locals => {:page => {:stats => splash_stats, :branding => branding}}
           elsif params.has_key?('format') && params['format'] == 'csv'
-            funder_dois,funder = funder_doi_from_id(params['q'])
-            solr_result = select(fundref_doi_query(funder_dois, prefixes))
-            #solr_result = select_all(fundref_doi_query(funder_dois, prefixes))
+            all_results = []
+            rest = []
+            qp = {:rows => 1000}
+            solr_result= @api.call("/funders/#{params['q']}/works",qp)
+            tr =  solr_result["message"]["total-results"].to_i
+            rows = solr_result["message"]["items-per-page"].to_i
             results = search_results(solr_result)
-
+            if rows < tr
+              tp = (tr/rows).ceil
+              rem = tr % rows
+              tp += 1 if rem != 0
+              qp[:page] = 2
+              rest = iterate_results(tp,qp)
+            end
+            all_results = rest.count == 0 ? results : results + rest
             csv_response = CSV.generate do |csv|
               csv << ['DOI', 'Type', 'Year', 'Title', 'Publication', 'Authors', 'Funders', 'Awards']
-              results.each do |result|
+              all_results.each do |result|
                 csv << [result.display_doi,
                   result.type,
                   result.coins_year,
@@ -742,6 +768,7 @@ configure do
             :page => query_page
           }
           result = @api.get_funder_id_works(funder_id,qp)
+          result = result["message"]
           page = {
             :totalResults => result['total-results'],
             :startIndex => result['query']['start-index'],
@@ -819,7 +846,7 @@ configure do
           :order => 'desc'
         }
         result = @api.call("/works", params)
-
+        result = result['message']
         items = result['items'].map do |r|
           {
             :doi => r['URL'].sub("http://dx.","https://"),
@@ -920,7 +947,8 @@ configure do
 
         results = @api.call("/funders",qp)
         datums = nil
-        if results["total-results"] > 0
+        if results['message']["total-results"] > 0
+          results = results['message']
           if params['format'] == 'csv'
             content_type 'text/csv'
             CSV.generate do |csv|
@@ -1070,6 +1098,7 @@ configure do
               :filter => "doi:#{query}",
             }
             result = @api.call("/works", params)
+            result = result['message']
             doi_record = nil
             doi_record = result['items'].first if result.key?("items")
 
