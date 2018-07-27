@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://api.crossref.org/works?facet=type-name:10,published:10,container-title:10,publisher-name:10,funder-name:10&order=desc&query.bibliographic=josiah%20carberry&rows=10&sort=score
+    uri: http://indx1:3003/works?facet=type-name:10,published:10,container-title:10,publisher-name:10,funder-name:10&order=desc&query.bibliographic=josiah%20carberry&rows=10&sort=score
     body:
       encoding: US-ASCII
       string: ''
@@ -29,26 +29,20 @@ http_interactions:
       Access-Control-Allow-Headers:
       - X-Requested-With
       Content-Length:
-      - '16341'
+      - '16351'
       Server:
       - http-kit
       Date:
-      - Wed, 18 Jul 2018 17:08:23 GMT
-      X-Rate-Limit-Limit:
-      - '50'
-      X-Rate-Limit-Interval:
-      - 1s
-      Connection:
-      - close
+      - Fri, 27 Jul 2018 12:38:45 GMT
     body:
       encoding: UTF-8
-      string: '{"status":"ok","message-type":"work-list","message-version":"1.0.0","message":{"facets":{"type-name":{"value-count":10,"values":{"Journal
-        Article":1738,"Chapter":354,"Dataset":172,"Conference Paper":108,"Entry":88,"Reference":76,"Monograph":42,"Other":13,"Book":8,"Report":5}},"published":{"value-count":10,"values":{"2000":200,"2012":96,"2011":95,"2017":86,"2013":86,"2016":81,"2007":80,"2014":78,"2010":69,"2018":67}},"container-title":{"value-count":10,"values":{"Electronic
+      string: '{"status":"ok","message-type":"work-list","message-version":"1.0.0","qtime":25,"message":{"facets":{"type-name":{"value-count":10,"values":{"Journal
+        Article":1743,"Chapter":354,"Dataset":172,"Conference Paper":108,"Entry":98,"Reference":70,"Monograph":42,"Other":13,"Book":8,"Report":5}},"published":{"value-count":10,"values":{"2000":200,"2012":97,"2011":95,"2013":86,"2017":85,"2007":84,"2016":81,"2014":78,"2018":71,"2010":69}},"container-title":{"value-count":10,"values":{"Electronic
         Enlightenment document collection":113,"Oxford Dictionary of National Biography":52,"The
-        American Historical Review":49,"American National Biography Online":38,"Who
-        Was Who":35,"Notes and Queries":34,"Science":29,"Correspondence of Josiah
-        Wedgwood":29,"Field Crops Research":22,"Art Sales Catalogues Online":22}},"publisher-name":{"value-count":10,"values":{"Elsevier
-        BV":255,"Oxford University Press":216,"Wiley":150,"Oxford University Press
+        American Historical Review":49,"Who Was Who":39,"American National Biography
+        Online":38,"Notes and Queries":34,"Science":29,"Correspondence of Josiah Wedgwood":29,"Field
+        Crops Research":22,"Art Sales Catalogues Online":22}},"publisher-name":{"value-count":10,"values":{"Elsevier
+        BV":257,"Oxford University Press":220,"Wiley":150,"Oxford University Press
         (OUP)":135,"Bodleian Libraries, University of Oxford":128,"JSTOR":118,"University
         of Chicago Press":108,"Springer Nature":94,"Cambridge University Press (CUP)":90,"SAGE
         Publications":68}},"funder-name":{"value-count":10,"values":{"National Health
@@ -56,7 +50,7 @@ http_interactions:
         Foundation":3,"National Institutes of Health":2,"Department of Foreign Affairs
         and Trade":2,"Commonwealth Scientific and Industrial Research Organisation":2,"China
         Scholarship Council":2,"Autism Speaks":2,"Australian Research Council":2,"Australian
-        National Health and Medical Research Council (NHRMC) Early Career Fellowship":2}}},"total-results":2604,"items":[{"indexed":{"date-parts":[[2018,7,10]],"date-time":"2018-07-10T23:10:06Z","timestamp":1531264206747},"update-to":[{"updated":{"date-parts":[[2018,1,1]],"date-time":"2018-01-01T00:00:00Z","timestamp":1514764800000},"DOI":"10.5555\/12345678","type":"corrigendum","label":"Corrigendum"}],"reference-count":6,"publisher":"Test
+        National Health and Medical Research Council (NHRMC) Early Career Fellowship":2}}},"total-results":2614,"items":[{"indexed":{"date-parts":[[2018,7,10]],"date-time":"2018-07-10T23:10:06Z","timestamp":1531264206747},"update-to":[{"updated":{"date-parts":[[2018,1,1]],"date-time":"2018-01-01T00:00:00Z","timestamp":1514764800000},"DOI":"10.5555\/12345678","type":"corrigendum","label":"Corrigendum"}],"reference-count":6,"publisher":"Test
         accounts","issue":"11","license":[{"URL":"http:\/\/psychoceramicsproprietrylicenseV1.com","start":{"date-parts":[[2011,11,21]],"date-time":"2011-11-21T00:00:00Z","timestamp":1321833600000},"delay-in-days":1195,"content-version":"tdm"},{"URL":"http:\/\/psychoceramicsproprietrylicenseV1.com","start":{"date-parts":[[2011,11,21]],"date-time":"2011-11-21T00:00:00Z","timestamp":1321833600000},"delay-in-days":1195,"content-version":"vor"},{"URL":"http:\/\/http:\/\/psychoceramicsproprietrylicenseV1.com","start":{"date-parts":[[2011,11,21]],"date-time":"2011-11-21T00:00:00Z","timestamp":1321833600000},"delay-in-days":1195,"content-version":"am"}],"funder":[{"DOI":"10.13039\/100000001","name":"National
         Science Foundation","doi-asserted-by":"publisher","award":["12345678"]},{"DOI":"10.13039\/100006151","name":"Basic
         Energy Sciences","doi-asserted-by":"publisher","award":["12345679"]}],"content-domain":{"domain":["psychoceramics.labs.crossref.org"],"crossmark-restriction":false},"chair":[{"name":"Friends
@@ -74,7 +68,7 @@ http_interactions:
         suggests that context must come from the collective unconscious.<\/jats:p>","DOI":"10.5555\/12345678","type":"journal-article","created":{"date-parts":[[2011,11,9]],"date-time":"2011-11-09T14:42:05Z","timestamp":1320849725000},"page":"1-3","update-policy":"http:\/\/dx.doi.org\/10.5555\/something","source":"Crossref","is-referenced-by-count":2,"title":["Toward
         a Unified Theory of High-Energy Metaphysics: Silly String Theory"],"prefix":"10.5555","volume":"5","clinical-trial-number":[{"clinical-trial-number":"isrctn12345","registry":"10.18810\/isrctn"}],"author":[{"ORCID":"http:\/\/orcid.org\/0000-0002-1825-0097","authenticated-orcid":false,"suffix":"Jr.","given":"Josiah","family":"Carberry","sequence":"first","affiliation":[{"name":"Department
         of Psychoceramics, Brown University"}]}],"member":"7822","published-online":{"date-parts":[[2008,8,13]]},"container-title":["Journal
-        of Psychoceramics"],"language":"en","link":[{"URL":"http:\/\/psychoceramics.labs.crossref.org\/10.5555-12345678.html","content-type":"unspecified","content-version":"vor","intended-application":"similarity-checking"}],"deposited":{"date-parts":[[2018,7,10]],"date-time":"2018-07-10T22:38:49Z","timestamp":1531262329000},"score":24.717178,"issued":{"date-parts":[[2008,8,13]]},"references-count":6,"journal-issue":{"published-online":{"date-parts":[[2008,2,29]]},"published-print":{"date-parts":[[2008,2,29]]},"issue":"11"},"URL":"http:\/\/dx.doi.org\/10.5555\/12345678","archive":["CLOCKSS"],"relation":{"is-reply-to":[{"id-type":"doi","id":"10.5555\/24242424x","asserted-by":"subject"}]},"ISSN":["0264-3561"],"issn-type":[{"value":"0264-3561","type":"electronic"}],"assertion":[{"URL":"http:\/\/orcid.org\/0000-0002-1825-0097","order":0,"name":"orcid","label":"ORCID","explanation":{"URL":"IDs
+        of Psychoceramics"],"language":"en","link":[{"URL":"http:\/\/psychoceramics.labs.crossref.org\/10.5555-12345678.html","content-type":"unspecified","content-version":"vor","intended-application":"similarity-checking"}],"deposited":{"date-parts":[[2018,7,10]],"date-time":"2018-07-10T22:38:49Z","timestamp":1531262329000},"score":24.72485,"issued":{"date-parts":[[2008,8,13]]},"references-count":6,"journal-issue":{"published-online":{"date-parts":[[2008,2,29]]},"published-print":{"date-parts":[[2008,2,29]]},"issue":"11"},"URL":"http:\/\/dx.doi.org\/10.5555\/12345678","archive":["CLOCKSS"],"relation":{"is-reply-to":[{"id-type":"doi","id":"10.5555\/24242424x","asserted-by":"subject"}]},"ISSN":["0264-3561"],"issn-type":[{"value":"0264-3561","type":"electronic"}],"assertion":[{"URL":"http:\/\/orcid.org\/0000-0002-1825-0097","order":0,"name":"orcid","label":"ORCID","explanation":{"URL":"IDs
         for Or"}},{"value":"2012-07-24","order":0,"name":"received","label":"Received","group":{"name":"publication_history","label":"Publication
         History"}},{"value":"2012-08-29","order":1,"name":"accepted","label":"Accepted","group":{"name":"publication_history","label":"Publication
         History"}},{"value":"2012-09-26","order":2,"name":"published_online","label":"Published
@@ -89,19 +83,19 @@ http_interactions:
         & Licensing"}}]},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T10:32:45Z","timestamp":1525775565767},"reference-count":0,"publisher":"Oxford
         University Press","content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2011,10,31]]},"DOI":"10.1093\/benz\/9780199773787.article.b00195864","type":"reference-book","created":{"date-parts":[[2017,12,16]],"date-time":"2017-12-16T12:44:26Z","timestamp":1513428266000},"source":"Crossref","is-referenced-by-count":0,"title":["Wells,
         Josiah Robert"],"prefix":"10.1093","member":"286","container-title":["Benezit
-        Dictionary of Artists"],"original-title":["Wells, Josiah Robert"],"deposited":{"date-parts":[[2017,12,16]],"date-time":"2017-12-16T12:44:26Z","timestamp":1513428266000},"score":17.682144,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00195864"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T10:30:16Z","timestamp":1525775416131},"reference-count":0,"publisher":"Oxford
+        Dictionary of Artists"],"original-title":["Wells, Josiah Robert"],"deposited":{"date-parts":[[2017,12,16]],"date-time":"2017-12-16T12:44:26Z","timestamp":1513428266000},"score":17.693813,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00195864"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T10:30:16Z","timestamp":1525775416131},"reference-count":0,"publisher":"Oxford
         University Press","content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2011,10,31]]},"DOI":"10.1093\/benz\/9780199773787.article.b00196733","type":"reference-book","created":{"date-parts":[[2017,12,16]],"date-time":"2017-12-16T10:24:28Z","timestamp":1513419868000},"source":"Crossref","is-referenced-by-count":0,"title":["Whymper,
         Josiah Wood"],"prefix":"10.1093","member":"286","container-title":["Benezit
-        Dictionary of Artists"],"original-title":["Whymper, Josiah Wood"],"deposited":{"date-parts":[[2017,12,16]],"date-time":"2017-12-16T10:24:28Z","timestamp":1513419868000},"score":17.682144,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00196733"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T10:20:00Z","timestamp":1525774800703},"reference-count":0,"publisher":"Oxford
+        Dictionary of Artists"],"original-title":["Whymper, Josiah Wood"],"deposited":{"date-parts":[[2017,12,16]],"date-time":"2017-12-16T10:24:28Z","timestamp":1513419868000},"score":17.693813,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00196733"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T10:20:00Z","timestamp":1525774800703},"reference-count":0,"publisher":"Oxford
         University Press","content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2011,10,31]]},"DOI":"10.1093\/benz\/9780199773787.article.b00073755","type":"reference-book","created":{"date-parts":[[2017,12,16]],"date-time":"2017-12-16T02:58:46Z","timestamp":1513393126000},"source":"Crossref","is-referenced-by-count":0,"title":["Gilbert,
         Josiah"],"prefix":"10.1093","member":"286","container-title":["Benezit Dictionary
-        of Artists"],"original-title":["Gilbert, Josiah"],"deposited":{"date-parts":[[2017,12,16]],"date-time":"2017-12-16T02:58:47Z","timestamp":1513393127000},"score":17.682144,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00073755"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T10:18:09Z","timestamp":1525774689620},"reference-count":0,"publisher":"Oxford
+        of Artists"],"original-title":["Gilbert, Josiah"],"deposited":{"date-parts":[[2017,12,16]],"date-time":"2017-12-16T02:58:47Z","timestamp":1513393127000},"score":17.693813,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00073755"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T10:18:09Z","timestamp":1525774689620},"reference-count":0,"publisher":"Oxford
         University Press","content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2011,10,31]]},"DOI":"10.1093\/benz\/9780199773787.article.b00000943","type":"reference-book","created":{"date-parts":[[2017,12,15]],"date-time":"2017-12-15T23:09:40Z","timestamp":1513379380000},"source":"Crossref","is-referenced-by-count":0,"title":["Ades,
         Josiah V."],"prefix":"10.1093","member":"286","container-title":["Benezit
-        Dictionary of Artists"],"original-title":["Ades, Josiah V."],"deposited":{"date-parts":[[2017,12,15]],"date-time":"2017-12-15T23:09:40Z","timestamp":1513379380000},"score":17.682144,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00000943"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T10:14:44Z","timestamp":1525774484517},"reference-count":0,"publisher":"Oxford
+        Dictionary of Artists"],"original-title":["Ades, Josiah V."],"deposited":{"date-parts":[[2017,12,15]],"date-time":"2017-12-15T23:09:40Z","timestamp":1513379380000},"score":17.693813,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00000943"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T10:14:44Z","timestamp":1525774484517},"reference-count":0,"publisher":"Oxford
         University Press","content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2011,10,31]]},"DOI":"10.1093\/benz\/9780199773787.article.b00095577","type":"reference-book","created":{"date-parts":[[2017,12,15]],"date-time":"2017-12-15T20:26:54Z","timestamp":1513369614000},"source":"Crossref","is-referenced-by-count":0,"title":["Jones,
         Josiah Clinton"],"prefix":"10.1093","member":"286","container-title":["Benezit
-        Dictionary of Artists"],"original-title":["Jones, Josiah Clinton"],"deposited":{"date-parts":[[2017,12,15]],"date-time":"2017-12-15T20:26:54Z","timestamp":1513369614000},"score":17.682144,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00095577"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T16:25:21Z","timestamp":1525796721849},"reference-count":0,"publisher":"Yale
+        Dictionary of Artists"],"original-title":["Jones, Josiah Clinton"],"deposited":{"date-parts":[[2017,12,15]],"date-time":"2017-12-15T20:26:54Z","timestamp":1513369614000},"score":17.693813,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00095577"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T16:25:21Z","timestamp":1525796721849},"reference-count":0,"publisher":"Yale
         University Press","content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2018,1,18]]},"abstract":"<p>This
         chapter examines Edward VI''s accession to the throne in 1547 at the age of
         nine following the death of his father, Henry VIII. The weight of evangelical
@@ -114,16 +108,16 @@ http_interactions:
         and problems that marked Edward''s reign, focusing on issues relating to royal
         visitation, the nature of the eucharist, liturgy and the introduction of a
         new Prayer Book, and the heresy of the anabaptists.<\/p>","DOI":"10.12987\/yale\/9780300170627.003.0010","type":"book","created":{"date-parts":[[2018,1,23]],"date-time":"2018-01-23T09:11:05Z","timestamp":1516698665000},"source":"Crossref","is-referenced-by-count":0,"title":["Josiah"],"prefix":"10.12987","author":[{"given":"Peter","family":"Marshall","sequence":"first","affiliation":[]}],"member":"5164","container-title":["Yale
-        University Press"],"original-title":["Josiah"],"deposited":{"date-parts":[[2018,1,23]],"date-time":"2018-01-23T09:11:05Z","timestamp":1516698665000},"score":17.682144,"issued":{"date-parts":[[2018,1,18]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.12987\/yale\/9780300170627.003.0010"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T16:42:56Z","timestamp":1525797776463},"reference-count":0,"publisher":"Oxford
+        University Press"],"original-title":["Josiah"],"deposited":{"date-parts":[[2018,1,23]],"date-time":"2018-01-23T09:11:05Z","timestamp":1516698665000},"score":17.693813,"issued":{"date-parts":[[2018,1,18]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.12987\/yale\/9780300170627.003.0010"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T16:42:56Z","timestamp":1525797776463},"reference-count":0,"publisher":"Oxford
         University Press","content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2011,10,31]]},"DOI":"10.1093\/benz\/9780199773787.article.b00173912","type":"reference-entry","created":{"date-parts":[[2018,1,24]],"date-time":"2018-01-24T09:49:34Z","timestamp":1516787374000},"source":"Crossref","is-referenced-by-count":0,"title":["Squire,
         Josiah"],"prefix":"10.1093","member":"286","container-title":["Benezit Dictionary
-        of Artists"],"original-title":["Squire, Josiah"],"deposited":{"date-parts":[[2018,1,26]],"date-time":"2018-01-26T11:26:16Z","timestamp":1516965976000},"score":17.682144,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00173912"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T16:47:57Z","timestamp":1525798077154},"reference-count":0,"publisher":"Oxford
+        of Artists"],"original-title":["Squire, Josiah"],"deposited":{"date-parts":[[2018,1,26]],"date-time":"2018-01-26T11:26:16Z","timestamp":1516965976000},"score":17.693813,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00173912"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T16:47:57Z","timestamp":1525798077154},"reference-count":0,"publisher":"Oxford
         University Press","content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2011,10,31]]},"DOI":"10.1093\/benz\/9780199773787.article.b00203033","type":"reference-entry","created":{"date-parts":[[2018,1,24]],"date-time":"2018-01-24T13:43:22Z","timestamp":1516801402000},"source":"Crossref","is-referenced-by-count":0,"title":["Wedgwood,
         Josiah"],"prefix":"10.1093","member":"286","container-title":["Benezit Dictionary
-        of Artists"],"original-title":["Wedgwood, Josiah"],"deposited":{"date-parts":[[2018,1,26]],"date-time":"2018-01-26T12:45:31Z","timestamp":1516970731000},"score":17.682144,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00203033"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T09:44:54Z","timestamp":1525772694888},"reference-count":0,"publisher":"Oxford
+        of Artists"],"original-title":["Wedgwood, Josiah"],"deposited":{"date-parts":[[2018,1,26]],"date-time":"2018-01-26T12:45:31Z","timestamp":1516970731000},"score":17.693813,"issued":{"date-parts":[[2011,10,31]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/benz\/9780199773787.article.b00203033"},{"indexed":{"date-parts":[[2018,5,8]],"date-time":"2018-05-08T09:44:54Z","timestamp":1525772694888},"reference-count":0,"publisher":"Oxford
         University Press","content-domain":{"domain":[],"crossmark-restriction":false},"published-print":{"date-parts":[[2001]]},"DOI":"10.1093\/gmo\/9781561592630.article.21868","type":"reference-book","created":{"date-parts":[[2017,12,13]],"date-time":"2017-12-13T10:05:50Z","timestamp":1513159550000},"source":"Crossref","is-referenced-by-count":0,"title":["Pittman,
         Josiah"],"prefix":"10.1093","author":[{"given":"Bernarr","family":"Rainbow","sequence":"first","affiliation":[]}],"member":"286","container-title":["Oxford
-        Music Online"],"original-title":["Pittman, Josiah"],"deposited":{"date-parts":[[2018,1,4]],"date-time":"2018-01-04T15:42:04Z","timestamp":1515080524000},"score":17.682144,"issued":{"date-parts":[[2001]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/gmo\/9781561592630.article.21868"}],"items-per-page":10,"query":{"start-index":0,"search-terms":null}}}'
+        Music Online"],"original-title":["Pittman, Josiah"],"deposited":{"date-parts":[[2018,1,4]],"date-time":"2018-01-04T15:42:04Z","timestamp":1515080524000},"score":17.693813,"issued":{"date-parts":[[2001]]},"references-count":0,"URL":"http:\/\/dx.doi.org\/10.1093\/gmo\/9781561592630.article.21868"}],"items-per-page":10,"query":{"start-index":0,"search-terms":null}}}'
     http_version: 
-  recorded_at: Wed, 18 Jul 2018 17:08:23 GMT
+  recorded_at: Fri, 27 Jul 2018 12:38:45 GMT
 recorded_with: VCR 4.0.0
