@@ -23,29 +23,24 @@ class APICalls
   end
 
   def call(route,params = nil)
-    current_routes = [works_url,funders_url]
     query = []
-    if current_routes.include?(route)
-      unless params.nil? && params.is_a?(Hash)
-        if params.key?(:page)
-          @page = params[:page]
-          @rows = params[:rows] if params.key?(:rows)
-          if params[:page] > 1
-            params[:offset] = get_offset
-          end
+    unless params.nil? && params.is_a?(Hash)
+      if params.key?(:page)
+        @page = params[:page]
+        @rows = params[:rows] if params.key?(:rows)
+        if params[:page] > 1
+          params[:offset] = get_offset
         end
-        params.delete(:page)
-        params.each_pair { |field,value|
-          query << "#{field}=#{value}"
-        }
       end
-      url = "#{route}"
-      url += "?#{query.join("&")}" unless query.count == 0
-      response = @url.get(url)
-      JSON.parse(response.body)['message']
-    else
-      "ERROR: incorrect route: #{route}"
+      params.delete(:page)
+      params.each_pair { |field,value|
+        query << "#{field}=#{value}"
+      }
     end
+    url = "#{route}"
+    url += "?#{query.join("&")}" unless query.count == 0
+    response = @url.get(url)
+    JSON.parse(response.body)
   end
 
   def get_funder_info(id)
@@ -72,7 +67,7 @@ class APICalls
   def get_funder_id_works(id,query_params)
     url = "#{funders_url}/#{id}#{works_url}"
     rsp = handle_query(url,query_params)
-    rsp['message']
+    rsp
   end
 
   def query(query_params)
