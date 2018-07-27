@@ -731,34 +731,39 @@ configure do
 
       get '/funders/:id/dois' do
         funder_id = params[:id]
-        funder_doi = funder_doi_from_id(funder_id).first.first #returns an array of dois
-        qp = {
-          :rows => query_rows,
-          :page => query_page
-        }
-        result = @api.get_funder_id_works(funder_doi,qp)
-
-        items = result['items'].map do |r|
-          {
-            :doi => r['URL'].sub("http://dx.","https://"),
-            :deposited => r['deposited']['date-parts'].join("-"),
-            :published => result_publication_date(r)
+        funder = @api.get_funder_info(funder_id)
+        if funder["message"]
+          qp = {
+            :rows => query_rows,
+            :page => query_page
           }
+          result = @api.get_funder_id_works(funder_id,qp)
+          page = {
+            :totalResults => result['total-results'],
+            :startIndex => result['query']['start-index'],
+            :itemsPerPage => query_rows,
+            :query => {
+              :searchTerms => funder_id,
+              :startPage => query_page
+            }
+          }
+          if result['items'].count > 0
+            items = result['items'].map do |r|
+              {
+                :doi => r['URL'].sub("http://dx.","https://"),
+                :deposited => r['deposited']['date-parts'].join("-"),
+                :published => result_publication_date(r)
+              }
+            end
+            page[:items] = items
+          end
+          content_type 'application/json'
+          JSON.pretty_generate(page)
+        else
+          "No such funder identifier"
         end
 
-        page = {
-          :totalResults => result['total-results'],
-          :startIndex => result['query']['start-index'],
-          :itemsPerPage => query_rows,
-          :query => {
-            :searchTerms => funder_id,
-            :startPage => query_page
-          },
-          :items => items
-        }
 
-        content_type 'application/json'
-        JSON.pretty_generate(page)
       end
 
       get '/funders/:id/hierarchy' do
@@ -878,7 +883,8 @@ configure do
       get '/funders/:id' do
         id = params["id"]
         funder = @api.get_funder_info(id)
-        if funder
+        if funder["message"]
+          funder = funder["message"]
           page = {
             :id => funder['id'],
             :country => funder['location'],
@@ -930,6 +936,7 @@ configure do
               }
               if descendants
                 funder_info = @api.get_funder_info(result['id'])
+                funder_info = funder_info["message"]
                 h_names = funder_info["hierarchy-names"]
                 d_names = {}
                 if funder_info['descendants'].count > 0
