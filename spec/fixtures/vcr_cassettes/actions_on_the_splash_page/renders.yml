@@ -2,7 +2,46 @@
 http_interactions:
 - request:
     method: get
-    uri: https://api.crossref.org/works?rows=0
+    uri: http://indx1:3003/works?rows=0
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v0.9.2
+      Authorization:
+      - "<Authorization>"
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - application/json;charset=UTF-8
+      Vary:
+      - Accept
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Headers:
+      - X-Requested-With
+      Content-Length:
+      - '203'
+      Server:
+      - http-kit
+      Date:
+      - Fri, 27 Jul 2018 12:38:46 GMT
+    body:
+      encoding: UTF-8
+      string: '{"status":"ok","message-type":"work-list","message-version":"1.0.0","qtime":0,"message":{"facets":{},"total-results":98583487,"items":[],"items-per-page":0,"query":{"start-index":0,"search-terms":null}}}'
+    http_version: 
+  recorded_at: Fri, 27 Jul 2018 12:38:46 GMT
+- request:
+    method: get
+    uri: http://indx1:3003/funders?rows=0
     body:
       encoding: US-ASCII
       string: ''
@@ -33,21 +72,15 @@ http_interactions:
       Server:
       - http-kit
       Date:
-      - Wed, 18 Jul 2018 17:08:16 GMT
-      X-Rate-Limit-Limit:
-      - '50'
-      X-Rate-Limit-Interval:
-      - 1s
-      Connection:
-      - close
+      - Fri, 27 Jul 2018 12:38:47 GMT
     body:
       encoding: UTF-8
-      string: '{"status":"ok","message-type":"work-list","message-version":"1.0.0","message":{"facets":{},"total-results":98375722,"items":[],"items-per-page":0,"query":{"start-index":0,"search-terms":null}}}'
+      string: '{"status":"ok","message-type":"funder-list","message-version":"1.0.0","qtime":null,"message":{"items-per-page":0,"query":{"start-index":0,"search-terms":null},"total-results":18067,"items":[]}}'
     http_version: 
-  recorded_at: Wed, 18 Jul 2018 17:08:16 GMT
+  recorded_at: Fri, 27 Jul 2018 12:38:46 GMT
 - request:
     method: get
-    uri: https://api.crossref.org/funders?rows=0
+    uri: http://indx1:3003/works?filter=has-funder:true&rows=0
     body:
       encoding: US-ASCII
       string: ''
@@ -74,65 +107,14 @@ http_interactions:
       Access-Control-Allow-Headers:
       - X-Requested-With
       Content-Length:
-      - '180'
+      - '202'
       Server:
       - http-kit
       Date:
-      - Wed, 18 Jul 2018 17:08:16 GMT
-      X-Rate-Limit-Limit:
-      - '50'
-      X-Rate-Limit-Interval:
-      - 1s
-      Connection:
-      - close
+      - Fri, 27 Jul 2018 12:38:47 GMT
     body:
       encoding: UTF-8
-      string: '{"status":"ok","message-type":"funder-list","message-version":"1.0.0","message":{"items-per-page":0,"query":{"start-index":0,"search-terms":null},"total-results":18067,"items":[]}}'
+      string: '{"status":"ok","message-type":"work-list","message-version":"1.0.0","qtime":0,"message":{"facets":{},"total-results":3002204,"items":[],"items-per-page":0,"query":{"start-index":0,"search-terms":null}}}'
     http_version: 
-  recorded_at: Wed, 18 Jul 2018 17:08:16 GMT
-- request:
-    method: get
-    uri: https://api.crossref.org/works?filter=has-funder:true&rows=0
-    body:
-      encoding: US-ASCII
-      string: ''
-    headers:
-      User-Agent:
-      - Faraday v0.9.2
-      Authorization:
-      - "<Authorization>"
-      Accept-Encoding:
-      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
-      Accept:
-      - "*/*"
-  response:
-    status:
-      code: 200
-      message: OK
-    headers:
-      Content-Type:
-      - application/json;charset=UTF-8
-      Vary:
-      - Accept
-      Access-Control-Allow-Origin:
-      - "*"
-      Access-Control-Allow-Headers:
-      - X-Requested-With
-      Content-Length:
-      - '192'
-      Server:
-      - http-kit
-      Date:
-      - Wed, 18 Jul 2018 17:08:18 GMT
-      X-Rate-Limit-Limit:
-      - '50'
-      X-Rate-Limit-Interval:
-      - 1s
-      Connection:
-      - close
-    body:
-      encoding: UTF-8
-      string: '{"status":"ok","message-type":"work-list","message-version":"1.0.0","message":{"facets":{},"total-results":2974976,"items":[],"items-per-page":0,"query":{"start-index":0,"search-terms":null}}}'
-    http_version: 
-  recorded_at: Wed, 18 Jul 2018 17:08:18 GMT
+  recorded_at: Fri, 27 Jul 2018 12:38:47 GMT
 recorded_with: VCR 4.0.0
