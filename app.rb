@@ -542,13 +542,16 @@ configure do
         query = @api.get_funder_info(id)
         dois = []
         funder_hsh = {}
-        funder_hsh[:id] = query["id"]
-        funder_hsh[:primary_name_display] = query["name"]
-        dois = [funder_hsh[:id]]
-        dois << query["descendants"] if query.key?("descendants")
-        dois.flatten! if dois.count > 1
-        funder_hsh[:nesting] = query['hierarchy']
-        funder_hsh[:nesting_names] = query['hierarchy-names']
+        if query["message"]
+          query = query["message"]
+          funder_hsh[:id] = query["id"]
+          funder_hsh[:primary_name_display] = query["name"]
+          dois = [funder_hsh[:id]]
+          dois << query["descendants"] if query.key?("descendants")
+          dois.flatten! if dois.count > 1
+          funder_hsh[:nesting] = query['hierarchy']
+          funder_hsh[:nesting_names] = query['hierarchy-names']
+        end
         [dois,funder_hsh]
       end
 
@@ -584,20 +587,21 @@ configure do
           if !params.has_key?('q')
             haml :splash, :locals => {:page => {:stats => splash_stats, :branding => branding}}
           elsif params.has_key?('format') && params['format'] == 'csv'
-            funder_dois = funder_doi_from_id(params['q'])
-            solr_result = select_all(fundref_doi_query(funder_dois, prefixes))
+            funder_dois,funder = funder_doi_from_id(params['q'])
+            solr_result = select(fundref_doi_query(funder_dois, prefixes))
+            #solr_result = select_all(fundref_doi_query(funder_dois, prefixes))
             results = search_results(solr_result)
 
             csv_response = CSV.generate do |csv|
               csv << ['DOI', 'Type', 'Year', 'Title', 'Publication', 'Authors', 'Funders', 'Awards']
               results.each do |result|
-                csv << [result.doi,
+                csv << [result.display_doi,
                   result.type,
                   result.coins_year,
                   result.coins_atitle,
                   result.coins_title,
                   result.coins_authors,
-                  result.plain_funder_names,
+                  result.plain_funder_names.join(","),
                   result.award_numbers
                 ]
               end
