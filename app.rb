@@ -350,7 +350,6 @@ configure do
         doi_q = funder_dois.map {|doi| "funder:#{doi}" }
         query = {}
         query[:filter_query] = doi_q
-        #query = {:q => doi_q.join(",")}
         query = base_query.merge(query)
 
         if prefixes
@@ -387,6 +386,7 @@ configure do
         fq.delete(field_name) if fq[field_name].empty?
 
         link = "#{request.path_info}?q=#{CGI.escape(params['q'])}"
+        link += "&base_uri=#{params['base_uri']}" if params.key?("base_uri")
         fq.each_pair do |field, vals|
           link += "&#{field}=#{CGI.escape(vals.join(';'))}"
         end
@@ -399,6 +399,7 @@ configure do
         fq[field_name] << field_value
 
         link = "#{request.path_info}?q=#{CGI.escape(params['q'])}"
+        link += "&base_uri=#{params['base_uri']}" if params.key?("base_uri")
         fq.each_pair do |field, vals|
           link += "&#{field}=#{CGI.escape(vals.join(';'))}"
         end
