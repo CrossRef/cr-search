@@ -1,15 +1,18 @@
 version: '3'
 
+networks:
+  crossref:
+    # 'external' means specified outside this file, not an external network
+    external:
+      name: crossref
+
 services:
-  mongo:
-    image: 'mongo'
-    ports:
-    - "27017:27017"
   web:
-    image: eshadatta/crmds_demo:dev
+    #image: eshadatta/test-crmds:dev
+    image: eshadatta/test-crmds:external
     #build: .
-    command: bundle exec unicorn -p 3000 -d -c unicorn.rb
+    command: bundle exec unicorn -p 3000 -d -c unicorn.rb 
+    networks: 
+      - crossref
     ports:
       - "3000:3000"
-    links:
-      - mongo

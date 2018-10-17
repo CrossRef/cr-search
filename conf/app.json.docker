@@ -11,7 +11,7 @@
   "orcid_redirect_uri": "<%= orcid_redirect_uri %>",
   "solr_url": "https://api.crossref.org/",
   "solr_select": "/works",
-  "mongo_host": "mongo",
+  "mongo_host": "external",
   "mongo_db": "crossref",
   "typical_rows": [10, 20, 50, 100, 500],
   "default_rows": 10,
