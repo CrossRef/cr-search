@@ -49,7 +49,7 @@ configure do
   # Configure solr
   set :solr, settings.api_url
   # Configure mongo
-  set :mongo, Mongo::Connection.new(settings.mongo_host)
+  set :mongo, Mongo::Connection.new(ENV["MONGO_HOST"])
   set :dois, settings.mongo[settings.mongo_db]['dois']
   set :shorts, settings.mongo[settings.mongo_db]['shorts']
   set :issns, settings.mongo[settings.mongo_db]['issns']
@@ -195,7 +195,8 @@ configure do
       end
 
       def check_params
-        api_url = settings.api_url
+        #api_url = settings.api_url
+        api_url = ENV["API_URL"]
         api_token = ENV["CROSSREF_API_TOKEN"].nil? ? nil : ENV["CROSSREF_API_TOKEN"]
         if params.has_key?("base_uri") && not(params["base_uri"].nil?)
           # remove trailing slash
