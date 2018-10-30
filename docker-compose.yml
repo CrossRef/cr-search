@@ -1,18 +1,11 @@
 version: '3'
 
-networks:
-  crossref:
-    # 'external' means specified outside this file, not an external network
-    external:
-      name: crossref
 
 services:
   web:
-    #image: eshadatta/test-crmds:dev
-    image: eshadatta/test-crmds:external
-    #build: .
+    image: eshadatta/test_crmds:vpn
     command: bundle exec unicorn -p 3000 -d -c unicorn.rb 
-    networks: 
-      - crossref
+    env_file:
+    - .image.env
     ports:
       - "3000:3000"
