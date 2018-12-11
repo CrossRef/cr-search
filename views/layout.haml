@@ -36,20 +36,18 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-TileImage" content="https://assets.crossref.org/favicon/mstile-144x144.png">
     <meta name="theme-color" content="#ffffff">
-    
+
     :javascript
-      var _paq = _paq || [];
-      _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
-      _paq.push(["setCookieDomain", "*.search.crossref.org"]);
-      _paq.push(["setDomains", ["*.search.crossref.org","*.search.crossref.org"]]);
+       var _paq = _paq || [];
+       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['trackPageView']);
       _paq.push(['enableLinkTracking']);
       (function() {
-      var u="//crossref.piwikpro.com/";
+      var u="https://crossref.matomo.cloud/";
       _paq.push(['setTrackerUrl', u+'piwik.php']);
-      _paq.push(['setSiteId', 17]);
+      _paq.push(['setSiteId', '4']);
       var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+      g.type='text/javascript'; g.async=true; g.defer=true; g.src='//cdn.matomo.cloud/crossref.matomo.cloud/piwik.js'; s.parentNode.insertBefore(g,s);
       })();
     :css
       a, a:visited {
@@ -66,7 +64,7 @@
     .notifications.top-left
     .container-fluid
       = yield
-    - if expired_session?  
+    - if expired_session?
       :javascript
         $(document).ready(function() {
           $('.top-left').notify({
@@ -79,4 +77,3 @@
             url: '/auth/signout',
           });
         });
-
