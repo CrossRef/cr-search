@@ -1,7 +1,8 @@
 source "http://rubygems.org"
 gem 'sinatra'
 gem 'haml'
-gem 'mongo'
+gem 'mongo', '~> 1.12', '>= 1.12.5'
+gem "rack", ">= 1.6.11"
 gem 'json'
 gem 'bson_ext'
 gem 'rsolr'
