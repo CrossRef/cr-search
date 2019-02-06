@@ -22,8 +22,10 @@ class SearchResult
     def parse_people(people)
       name = []
       people.each { |p|
-        name << "#{p["given"]} #{p["family"]}"
+        name << "#{p["given"]} #{p["family"]}" if (p.key?("given") || p.key?("family"))
+        name << "#{p["name"]}" if p.key?("name")
       }
+      name = name.reject(&:empty?)
       name
     end
 
