@@ -69,11 +69,12 @@
           %span.funder-hl= name
 
 .facets
-  - page[:branding][:facet_fields].each do |n|
+  - page[:branding][:facet_fields].keys.each do |n|
     - name = n.to_s
+    - heading = page[:branding][:facet_fields][n]
     - values = page[:facets][name]["values"]
     .mini-page-header
-      %h6= name.gsub(/_str/, '').gsub(/_/, ' ')
+      %h6= heading.gsub(/_str/, '').gsub(/_/, ' ')
     %ul.nav.nav-list
       - values.each_pair do |value_name, value_count|
         - unless value_count.zero?
