@@ -83,10 +83,10 @@ configure do
 
   # Set facet fields
 
-  set :facet_fields, ['type-name','published','container-title','publisher-name','funder-name']
-  set :crmds_facet_fields, ['type-name','published','container-title','publisher-name','funder-name']
-  set :fundref_facet_fields, ['type-name','published','container-title','publisher-name','funder-name']
-  set :chorus_facet_fields, ['type-name','published','container-title','publisher-name','funder-name']
+  set :facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publication","funder-name" => "funder name"}
+  set :crmds_facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publication","funder-name" => "funder name"}
+  set :fundref_facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publication","funder-name" => "funder name"}
+  set :chorus_facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publication","funder-name" => "funder name"}
 
   # Orcid endpoint
   set :orcid_service, Faraday.new(:url => settings.orcid_site)
@@ -281,7 +281,7 @@ configure do
 
       def abstract_facet_query
         fq = {}
-        settings.facet_fields.each do |field|
+        settings.facet_fields.keys.each do |field|
           if params.has_key? field
             val = params[field]
             params[field].split(';').each do |val|
@@ -315,7 +315,7 @@ configure do
         {
           :sort => sort_term,
           :rows => query_rows,
-          :facet => settings.facet_fields,
+          :facet => settings.facet_fields.keys,
         }
       end
 
@@ -416,7 +416,7 @@ configure do
       end
 
       def search_link opts
-        fields = settings.facet_fields + ['q', 'sort']
+        fields = settings.facet_fields.keys + ['q', 'sort']
         parts = fields.map do |field|
           if opts.has_key? field.to_sym
             "#{field}=#{CGI.escape(opts[field.to_sym])}"
