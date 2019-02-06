@@ -83,10 +83,10 @@ configure do
 
   # Set facet fields
 
-  set :facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publication","funder-name" => "funder name"}
-  set :crmds_facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publication","funder-name" => "funder name"}
-  set :fundref_facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publication","funder-name" => "funder name"}
-  set :chorus_facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publication","funder-name" => "funder name"}
+  set :facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publisher","funder-name" => "funder name"}
+  set :crmds_facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publisher","funder-name" => "funder name"}
+  set :fundref_facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publisher","funder-name" => "funder name"}
+  set :chorus_facet_fields, {"type-name" => "type","published" => "year","container-title" => "publication","publisher-name" => "publisher","funder-name" => "funder name"}
 
   # Orcid endpoint
   set :orcid_service, Faraday.new(:url => settings.orcid_site)
