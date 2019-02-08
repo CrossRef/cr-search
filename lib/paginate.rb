@@ -6,7 +6,7 @@ class Paginate
     @page = page
     @per_page = per_page
     @response = solr_response['message']
-    #@header = solr_response['header']
+    @total_page_limit = 10
   end
 
   def docs
@@ -22,7 +22,7 @@ class Paginate
   end
 
   def total_pages
-    [(@response['total-results'] / per_page.to_f).ceil, 10].min
+    [(@response['total-results'] / per_page.to_f).ceil, @total_page_limit].min
   end
 
   def total_rows
