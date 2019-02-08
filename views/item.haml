@@ -1,48 +1,47 @@
 %tr
   %td.item-data
-    - unless item.title.nil?
-      %p.lead
-        = item.title
-      %p.extra{:style => 'margin-top: .5em;'}
+    %p.lead
+      = item.title
+    %p.extra{:style => 'margin-top: .5em;'}
+      %span
+        - if test_doi?(item.doi)
+          %b{:style => 'color: rgb(207, 121, 121);'} Example Item
+        - else
+          -# formatting type in accordance with existing format
+          -# "book-chapter" = Book Chapter
+          - unless item.type.nil?
+            - type = item.type.split(/\W/).each { |w| w.capitalize! }.join(" ")
+            %b= type
+        published
+        %b
+          - unless item.day.nil?
+            = item.day
+          - unless item.month.nil?
+            = item.month
+          - unless item.year.nil?
+            = item.year
+      - unless item.publication.nil?
         %span
-          - if test_doi?(item.doi)
-            %b{:style => 'color: rgb(207, 121, 121);'} Example Item
-          - else
-            -# formatting type in accordance with existing format
-            -# "book-chapter" = Book Chapter
-            - unless item.type.nil?
-              - type = item.type.split(/\W/).each { |w| w.capitalize! }.join(" ")
-              %b= type
-          published
-          %b
-            - unless item.day.nil?
-              = item.day
-            - unless item.month.nil?
-              = item.month
-            - unless item.year.nil?
-              = item.year
-        - unless item.publication.nil?
-          %span
-            in
-            %b= item.publication
-        - unless item.volume.nil?
-          %span
-            volume
-            %b= item.volume
-        - unless item.issue.nil?
-          %span
-            issue
-            %b= item.issue
-        - if !item.first_page.nil? && !item.last_page.nil?
-          %span
-            on pages
-            %b= item.first_page
-            to
-            %b= item.last_page
-        - elsif !item.first_page.nil?
-          %span
-            on page
-            %b= item.first_page
+          in
+          %b= item.publication
+      - unless item.volume.nil?
+        %span
+          volume
+          %b= item.volume
+      - unless item.issue.nil?
+        %span
+          issue
+          %b= item.issue
+      - if !item.first_page.nil? && !item.last_page.nil?
+        %span
+          on pages
+          %b= item.first_page
+          to
+          %b= item.last_page
+      - elsif !item.first_page.nil?
+        %span
+          on page
+          %b= item.first_page
     - unless item.grant_info.nil?
       %p.extra
         %span Research funded by
