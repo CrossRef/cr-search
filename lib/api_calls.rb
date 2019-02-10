@@ -218,7 +218,7 @@ class APICalls
 
 
   def get_response(url)
-    rsp = @url.get(url)
+    rsp = @url.get(URI.encode(url))
     chk_response(rsp.body)
   end
 

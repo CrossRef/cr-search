@@ -29,7 +29,7 @@ require_relative 'lib/orcid_update'
 require_relative 'lib/orcid_claim'
 require_relative 'lib/orcid_auth'
 require_relative 'lib/api_calls'
-MIN_MATCH_SCORE = 2
+MIN_MATCH_SCORE = 75
 MIN_MATCH_TERMS = 3
 MAX_MATCH_TEXTS = 1000
 
