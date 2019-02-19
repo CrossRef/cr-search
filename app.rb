@@ -47,6 +47,7 @@ configure do
   set :protection, :except => :json_csrf
   set :app_file, __FILE__
   # Configure solr
+  set :api_url, ENV["API_URL"]
   set :solr, settings.api_url
   # Configure mongo
   set :mongo, Mongo::Connection.new(ENV["MONGO_HOST"])
@@ -59,6 +60,10 @@ configure do
   set :orcids, settings.mongo[settings.mongo_db]['orcids']
   set :links, settings.mongo[settings.mongo_db]['links']
   set :funders, settings.mongo[settings.mongo_db]['funders']
+  set :orcid_client_id, ENV["ORCID_CLIENT_ID"]
+  set :orcid_client_secret, ENV["ORCID_CLIENT_SERVICE"]
+  set :orcid_import_callback, ENV["ORCID_IMPORT_CALLBACK"]
+  set :orcid_redirect_uri, ENV["ORCID_REDIRECT_URI"]
 
   # Set up for http requests to data.crossref.org and dx.doi.org
   doi_org = Faraday.new(:url => 'https://doi.org') do |c|
@@ -195,8 +200,7 @@ configure do
       end
 
       def check_params
-        #api_url = settings.api_url
-        api_url = ENV["API_URL"]
+        api_url = settings.api_url
         api_token = ENV["CROSSREF_API_TOKEN"].nil? ? nil : ENV["CROSSREF_API_TOKEN"]
         if params.has_key?("base_uri") && not(params["base_uri"].nil?)
           # remove trailing slash
