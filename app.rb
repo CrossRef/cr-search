@@ -61,7 +61,7 @@ configure do
   set :links, settings.mongo[settings.mongo_db]['links']
   set :funders, settings.mongo[settings.mongo_db]['funders']
   set :orcid_client_id, ENV["ORCID_CLIENT_ID"]
-  set :orcid_client_secret, ENV["ORCID_CLIENT_SERVICE"]
+  set :orcid_client_secret, ENV["ORCID_CLIENT_SECRET"]
   set :orcid_import_callback, ENV["ORCID_IMPORT_CALLBACK"]
   set :orcid_redirect_uri, ENV["ORCID_REDIRECT_URI"]
 
