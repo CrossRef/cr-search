@@ -1101,7 +1101,7 @@ configure do
           else
             # TODO: escape doi arg
             params = {
-              :filter => "doi:#{query}",
+              :filter => "doi:#{doi}",
             }
             result = @api.call("/works", params)
             result = result['message']
