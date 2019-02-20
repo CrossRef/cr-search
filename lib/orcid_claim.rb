@@ -30,11 +30,13 @@ class OrcidClaim
 
       # Need to check both since @oauth may or may not have been serialized back and forth from JSON.
       uid = @oauth[:uid] || @oauth['uid']
-
+      orcid_redirect_uri = ENV["ORCID_REDIRECT_URI"]
+      orcid_client_id = ENV["ORCID_CLIENT_ID"]
+      orcid_client_secret = ENV["ORCID_CLIENT_SECRET"]
       #$stderr.puts to_xml
 
-      opts = {:site => @conf['orcid_site'], :redirect_uri => @conf['orcid_redirect_uri']}
-      client = OAuth2::Client.new(@conf['orcid_client_id'], @conf['orcid_client_secret'], opts)
+      opts = {:site => @conf['orcid_site'], :redirect_uri => orcid_redirect_uri }
+      client = OAuth2::Client.new(orcid_client_id, orcid_client_secret, opts)
       token = OAuth2::AccessToken.new(client, @oauth['credentials']['token'])
       headers = {'Accept' => 'application/vnd.json+xml'}
       response = token.post("#{@conf['orcid_site']}/v#{ORCID_VERSION}/#{uid}/work") do |post|
