@@ -115,11 +115,11 @@ class OrcidClaim
   def insert_pub_date xml
     year,month,day = nil
     ["published-print","published-online"].each do |pub|
-      year,month,day = @work[pub]["date-parts"] if @work.key?(pub)
+      year,month,day = @work[pub]["date-parts"].first if @work.key?(pub)
     end
-    month_str = pad_date_item(month) unless (month.nil? or month.empty?)
-    day_str = pad_date_item(day) unless (day.nil? or day.empty?)
-    if !year.empty? && year
+    month_str = pad_date_item(month) unless (month.nil?)
+    day_str = pad_date_item(day) unless (day.nil?)
+    if year
       xml['common'].send(:'publication-date') {
         xml['common'].year(year.to_i.to_s)
         xml['common'].month(month_str) if month_str
@@ -152,7 +152,7 @@ class OrcidClaim
     end
 
     if @work["container-title"]
-      xml['work'].send(:'journal-title', container_title)
+      xml['work'].send(:'journal-title', @work["container-title"])
     end
   end
 
@@ -161,9 +161,9 @@ class OrcidClaim
       ['author', 'editor'].each do |role|
         if !@work[role].nil?
           @work[role].each do |r|
-            credit = "#{r["given"] r["family"]}"
+            credit = "#{r["given"]} #{r["family"]}"
             xml['work'].contributor {
-              xml['work'].send(:'credit-name', c.strip())
+              xml['work'].send(:'credit-name', credit.strip())
               xml['work'].send(:'contributor-attributes') {
                 xml['work'].send(:'contributor-role', role)
               }
