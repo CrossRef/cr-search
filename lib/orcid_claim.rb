@@ -106,18 +106,22 @@ class OrcidClaim
 
   def insert_ids xml
      xml['common'].send(:'external-ids') {
-       insert_id(xml, 'doi', to_doi(@work['doi_key']), 'self')
-       insert_id(xml, 'isbn', to_isbn(@work['isbn'].first), 'part-of') if @work['isbn'] && !@work['isbn'].empty?
-       insert_id(xml, 'issn', to_issn(@work['issn'].first), 'part-of') if @work['issn'] && !@work['issn'].empty?
+       insert_id(xml, 'doi', @work['DOI'], 'self')
+       insert_id(xml, 'isbn', to_isbn(@work['ISBN'].first), 'part-of') if @work['isbn'] && !@work['ISBN'].empty?
+       insert_id(xml, 'issn', to_issn(@work['ISSN'].first), 'part-of') if @work['ISSN'] && !@work['ISSN'].empty?
     }
   end
 
   def insert_pub_date xml
-    month_str = pad_date_item(@work['month'])
-    day_str = pad_date_item(@work['day'])
-    if @work['hl_year']
+    year,month,day = nil
+    ["published-print","published-online"].each do |pub|
+      year,month,day = @work[pub]["date-parts"] if @work.key?(pub)
+    end
+    month_str = pad_date_item(month) unless (month.nil? or month.empty?)
+    day_str = pad_date_item(day) unless (day.nil? or day.empty?)
+    if !year.empty? && year
       xml['common'].send(:'publication-date') {
-        xml['common'].year(@work['hl_year'].to_i.to_s)
+        xml['common'].year(year.to_i.to_s)
         xml['common'].month(month_str) if month_str
         xml['common'].day(day_str) if month_str && day_str
       }
@@ -125,19 +129,21 @@ class OrcidClaim
   end
 
   def insert_type xml
-    xml['work'].type orcid_work_type(@work['type'])
+    # commenting this out since the returned type from the method orcid_work_type seems to match the api response
+    #xml['work'].type orcid_work_type(@work['type'])
+    xml['work'].type @work['type']
   end
 
   def insert_titles xml
     subtitle = nil
-    if @work['hl_subtitle'] && !@work['hl_subtitle'].empty?
-      subtitle = @work['hl_subtitle'].first
+    if @work['subtitle'] && !@work['subtitle'].empty?
+      subtitle = @work['subtitle'].first
     end
 
-    if subtitle || @work['hl_title']
+    if subtitle || @work['title']
       xml['work'].title {
-        if @work['hl_title'] && !@work['hl_title'].empty?
-          xml['common'].title(without_control(@work['hl_title'].first))
+        if @work['title'] && !@work['title'].empty?
+          xml['common'].title(without_control(@work['title'].first))
         end
         if subtitle
           xml['common'].subtitle(without_control(subtitle))
@@ -145,12 +151,7 @@ class OrcidClaim
       }
     end
 
-    container_title = nil
-    if @work['hl_publication'] && !@work['hl_publication'].empty?
-      container_title = @work['hl_publication'].last
-    end
-
-    if container_title
+    if @work["container-title"]
       xml['work'].send(:'journal-title', container_title)
     end
   end
@@ -158,8 +159,9 @@ class OrcidClaim
   def insert_contributors xml
     xml['work'].contributors {
       ['author', 'editor'].each do |role|
-        if !@work["hl_#{role}s"].nil?
-          @work["hl_#{role}s"].split(',').each do |c|
+        if !@work[role].nil?
+          @work[role].each do |r|
+            credit = "#{r["given"] r["family"]}"
             xml['work'].contributor {
               xml['work'].send(:'credit-name', c.strip())
               xml['work'].send(:'contributor-attributes') {
@@ -174,7 +176,7 @@ class OrcidClaim
 
   def insert_citation xml
     conn = Faraday.new
-    response = conn.get "https://data.crossref.org/#{URI.encode(to_doi(@work['doi_key']))}", {}, {
+    response = conn.get "https://data.crossref.org/#{URI.encode(@work['DOI'])}", {}, {
       'Accept' => 'application/x-bibtex'
     }
 
