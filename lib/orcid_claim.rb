@@ -55,15 +55,14 @@ class OrcidClaim
 
   def orcid_work_type internal_work_type
     case internal_work_type
-    when 'Journal Article' then 'journal-article'
-    when 'Conference Paper' then 'conference-paper'
-    when 'Dissertation' then 'dissertation'
-    when 'Report' then 'report'
-    when 'Standard' then 'standards-and-policy'
-    when 'Dataset' then 'data-set'
-    when 'Book' then 'book'
-    when 'Reference' then 'book'
-    when 'Monograph' then 'book'
+    when 'journal-article' then 'journal-article'
+    when 'conference-paper' then 'conference-paper'
+    when 'dissertation' then 'dissertation'
+    when 'report' then 'report'
+    when 'standards-and-policy' then 'standards-and-policy'
+    when 'data-set' then 'data-set'
+    when 'book' then 'book'
+    when 'journal' then 'journal-issue'
     else 'other'
     end
   end
@@ -129,9 +128,7 @@ class OrcidClaim
   end
 
   def insert_type xml
-    # commenting this out since the returned type from the method orcid_work_type seems to match the api response
-    #xml['work'].type orcid_work_type(@work['type'])
-    xml['work'].type @work['type']
+    xml['work'].type orcid_work_type(@work['type'])
   end
 
   def insert_titles xml
