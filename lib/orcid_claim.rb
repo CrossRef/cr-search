@@ -149,7 +149,7 @@ class OrcidClaim
     end
 
     if @work["container-title"]
-      xml['work'].send(:'journal-title', @work["container-title"])
+      xml['work'].send(:'journal-title', @work["container-title"].first)
     end
   end
 
