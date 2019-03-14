@@ -30,11 +30,13 @@ class OrcidClaim
 
       # Need to check both since @oauth may or may not have been serialized back and forth from JSON.
       uid = @oauth[:uid] || @oauth['uid']
-
+      orcid_redirect_uri = ENV["ORCID_REDIRECT_URI"]
+      orcid_client_id = ENV["ORCID_CLIENT_ID"]
+      orcid_client_secret = ENV["ORCID_CLIENT_SECRET"]
       #$stderr.puts to_xml
 
-      opts = {:site => @conf['orcid_site'], :redirect_uri => @conf['orcid_redirect_uri']}
-      client = OAuth2::Client.new(@conf['orcid_client_id'], @conf['orcid_client_secret'], opts)
+      opts = {:site => @conf['orcid_site'], :redirect_uri => orcid_redirect_uri }
+      client = OAuth2::Client.new(orcid_client_id, orcid_client_secret, opts)
       token = OAuth2::AccessToken.new(client, @oauth['credentials']['token'])
       headers = {'Accept' => 'application/vnd.json+xml'}
       response = token.post("#{@conf['orcid_site']}/v#{ORCID_VERSION}/#{uid}/work") do |post|
@@ -53,15 +55,14 @@ class OrcidClaim
 
   def orcid_work_type internal_work_type
     case internal_work_type
-    when 'Journal Article' then 'journal-article'
-    when 'Conference Paper' then 'conference-paper'
-    when 'Dissertation' then 'dissertation'
-    when 'Report' then 'report'
-    when 'Standard' then 'standards-and-policy'
-    when 'Dataset' then 'data-set'
-    when 'Book' then 'book'
-    when 'Reference' then 'book'
-    when 'Monograph' then 'book'
+    when 'journal-article' then 'journal-article'
+    when 'conference-paper' then 'conference-paper'
+    when 'dissertation' then 'dissertation'
+    when 'report' then 'report'
+    when 'standards-and-policy' then 'standards-and-policy'
+    when 'data-set' then 'data-set'
+    when 'book' then 'book'
+    when 'journal' then 'journal-issue'
     else 'other'
     end
   end
@@ -104,18 +105,22 @@ class OrcidClaim
 
   def insert_ids xml
      xml['common'].send(:'external-ids') {
-       insert_id(xml, 'doi', to_doi(@work['doi_key']), 'self')
-       insert_id(xml, 'isbn', to_isbn(@work['isbn'].first), 'part-of') if @work['isbn'] && !@work['isbn'].empty?
-       insert_id(xml, 'issn', to_issn(@work['issn'].first), 'part-of') if @work['issn'] && !@work['issn'].empty?
+       insert_id(xml, 'doi', @work['DOI'], 'self')
+       insert_id(xml, 'isbn', to_isbn(@work['ISBN'].first), 'part-of') if @work['isbn'] && !@work['ISBN'].empty?
+       insert_id(xml, 'issn', to_issn(@work['ISSN'].first), 'part-of') if @work['ISSN'] && !@work['ISSN'].empty?
     }
   end
 
   def insert_pub_date xml
-    month_str = pad_date_item(@work['month'])
-    day_str = pad_date_item(@work['day'])
-    if @work['hl_year']
+    year,month,day = nil
+    ["published-print","published-online"].each do |pub|
+      year,month,day = @work[pub]["date-parts"].first if @work.key?(pub)
+    end
+    month_str = pad_date_item(month) unless (month.nil?)
+    day_str = pad_date_item(day) unless (day.nil?)
+    if year
       xml['common'].send(:'publication-date') {
-        xml['common'].year(@work['hl_year'].to_i.to_s)
+        xml['common'].year(year.to_i.to_s)
         xml['common'].month(month_str) if month_str
         xml['common'].day(day_str) if month_str && day_str
       }
@@ -128,14 +133,14 @@ class OrcidClaim
 
   def insert_titles xml
     subtitle = nil
-    if @work['hl_subtitle'] && !@work['hl_subtitle'].empty?
-      subtitle = @work['hl_subtitle'].first
+    if @work['subtitle'] && !@work['subtitle'].empty?
+      subtitle = @work['subtitle'].first
     end
 
-    if subtitle || @work['hl_title']
+    if subtitle || @work['title']
       xml['work'].title {
-        if @work['hl_title'] && !@work['hl_title'].empty?
-          xml['common'].title(without_control(@work['hl_title'].first))
+        if @work['title'] && !@work['title'].empty?
+          xml['common'].title(without_control(@work['title'].first))
         end
         if subtitle
           xml['common'].subtitle(without_control(subtitle))
@@ -143,23 +148,19 @@ class OrcidClaim
       }
     end
 
-    container_title = nil
-    if @work['hl_publication'] && !@work['hl_publication'].empty?
-      container_title = @work['hl_publication'].last
-    end
-
-    if container_title
-      xml['work'].send(:'journal-title', container_title)
+    if @work["container-title"]
+      xml['work'].send(:'journal-title', @work["container-title"].first)
     end
   end
 
   def insert_contributors xml
     xml['work'].contributors {
       ['author', 'editor'].each do |role|
-        if !@work["hl_#{role}s"].nil?
-          @work["hl_#{role}s"].split(',').each do |c|
+        if !@work[role].nil?
+          @work[role].each do |r|
+            credit = "#{r["given"]} #{r["family"]}"
             xml['work'].contributor {
-              xml['work'].send(:'credit-name', c.strip())
+              xml['work'].send(:'credit-name', credit.strip())
               xml['work'].send(:'contributor-attributes') {
                 xml['work'].send(:'contributor-role', role)
               }
@@ -172,7 +173,7 @@ class OrcidClaim
 
   def insert_citation xml
     conn = Faraday.new
-    response = conn.get "https://data.crossref.org/#{URI.encode(to_doi(@work['doi_key']))}", {}, {
+    response = conn.get "https://data.crossref.org/#{URI.encode(@work['DOI'])}", {}, {
       'Accept' => 'application/x-bibtex'
     }
 

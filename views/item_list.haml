@@ -33,7 +33,7 @@
     line-height: 1.3em;
   }
   .lead {
-    margin-bottom: .7em;  
+    margin-bottom: .7em;
   }
   .oa-tooltip, .oa-tooltip:visited, .oa-tooltip:hover {
     color: rgb(246, 130, 18);
@@ -82,6 +82,7 @@
   }
   .item-data .lead {
     margin-bottom: .2em;
+    font-weight: 500;
   }
   .item-data .extra b {
     font-size: 1.1em;
@@ -119,7 +120,7 @@
 
 :javascript
   MAX_EXPAND_CHARS = 240;
-  
+
   $(document).ready(function() {
     $('.oa-tooltip').tooltip({
       title: 'Article is published in a journal present in the Directory of Open Access Journals.'
@@ -127,7 +128,7 @@
 
     $('.expand').each(function() {
       if ($(this).text().length > MAX_EXPAND_CHARS) {
-        $(this).data('full-text', $(this).text());        
+        $(this).data('full-text', $(this).text());
         $(this).text($(this).text().substring(0, MAX_EXPAND_CHARS));
         $(this).append($('<a>').addClass('expander').text('...').attr('href', '#'));
       }
@@ -166,7 +167,7 @@
         return false;
       });
     }
-    
+
     var performSync = function($popover) {
       $.ajax({
         url: '/orcid/sync',
@@ -177,7 +178,7 @@
             replacePopoverWithLogin($popover);
           } else {
             location.reload();
-          }  
+          }
         },
         error: function() {
           location.reload();
@@ -261,19 +262,19 @@
           }
       });
     }
-          
+
     var claimNoneClickFn = function(e) {
       $('.claim-none').popover('destroy');
       $('.claim-warn').popover('destroy');
       $('.claim-ok').popover('destroy');
-      
+
       var $p = $('<p>').text('Are you sure you want to add this work to your ORCID record?');
       var $btnNo = $('<button>').addClass('btn').addClass('claim-no-btn').text('No');
       var $btnOk = $('<button>').addClass('btn').addClass('btn-success').addClass('claim-ok-btn').text('Yes');
       var $btns = $('<div>').addClass('btn-container').append($btnNo).append($btnOk);
       var $content = $('<div>').append($p).append($btns);
       var $popover = $(this);
-      
+
       $(this).popover({
         placement: 'bottom',
         html: true,
@@ -283,7 +284,7 @@
       });
 
       $(this).popover('show');
-      
+
       $('.claim-no-btn').click(function(e) {
         if (!$(this).hasClass('disabled')) {
           $popover.popover('destroy');
@@ -296,13 +297,13 @@
         if ($(this).hasClass('disabled')) {
           return;
         }
-        
+
         $(this).prepend($('<i>').addClass('icon-refresh').addClass('icon-spin'));
         $(this).addClass('disabled');
         $(this).parent().find('.btn').addClass('disabled');
 
         performClaim($popover);
-        
+
         e.preventDefault();
         return false;
       });
@@ -323,7 +324,7 @@
       var $btns = $('<div>').addClass('btn-container').append($btnClose).append($btnRefresh).append($btnRemove);
       var $content = $('<div>').append($text).append($btns);
       var $popover = $(this);
-      
+
       $(this).popover({
         placement: 'bottom',
         html: true,
@@ -333,7 +334,7 @@
       });
 
       $(this).popover('show');
-      
+
       $('.claim-close-btn').click(function(e) {
         if (!$(this).hasClass('disabled')) {
           $popover.popover('destroy');
@@ -351,12 +352,12 @@
         e.preventDefault();
         return false;
       });
-      
+
       $('.claim-remove-btn').click(function(e) {
         if ($(this).hasClass('disabled')) {
           return;
         }
-        
+
         $(this).prepend($('<i>').addClass('icon-refresh').addClass('icon-spin'));
         $(this).parent().find('.btn').addClass('disabled');
 
@@ -390,7 +391,7 @@
     $('.claim-none').click(claimNoneClickFn);
   });
 
-%table  
+%table
   - page[:items].each do |item|
     = partial :item, :page => page, :item => item
 
@@ -430,7 +431,7 @@
           %b= item.coins_atitle
           to your ORCID record. Double check that you were a
           contributor to this work.
-        %p Add this work to your ORCID record?  
+        %p Add this work to your ORCID record?
       .modal-footer
         %button.btn{'type' => 'button', 'data-dismiss' => 'modal'} No, thanks
         %button.btn.btn-primary{:id => "claim-button-#{item.hashed}"} Yes, do it
@@ -439,4 +440,3 @@
   function showCitationsBox(hashed) {
     $('#citations-' + hashed).modal();
   }
-

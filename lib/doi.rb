@@ -14,7 +14,7 @@ module Doi
   end
 
   # Very short DOIs are of the form abcde. These must be used with
-  # doi.org. We check for doi.org/ since characters only preclude 
+  # doi.org. We check for doi.org/ since characters only preclude
   # search terms.
   def very_short_doi? s
     s.strip =~ /\A(https?:\/\/)?doi\.org\/[a-z0-9]+\Z/
@@ -27,17 +27,21 @@ module Doi
   def to_prefix s
     s.match(/http:\/\/dx\.doi\.org\/(10\.\d+)\/.+/).captures.first
   end
-    
+
   def to_doi s
-    s = s.strip.sub(/\A(https?:\/\/)?dx\.doi\.org\//, '').sub(/\Adoi:/, '')
-    s.sub(/\A(https?:\/\/)?doi.org\//, '')
+    str = s
+    if str =~ /https.*?doi\.org/
+      str = str.strip.sub(/\A(https?:\/\/)?dx\.doi\.org\//, '').sub(/\Adoi:/, '')
+      str.sub(/\A(https?:\/\/)?doi.org\//, '')
+    end
+    str
   end
 
   def to_long_display_doi s
     doi = to_doi(s)
     "https://doi.org/#{doi}"
   end
-  
+
   def to_long_doi s
     doi = to_doi(s)
     normal_short_doi = doi.sub(/10\//, '').downcase
@@ -51,7 +55,7 @@ module Doi
         req.url "/10/#{normal_short_doi}"
         req.headers['Accept'] = JSON_TYPE
       end
-      
+
       if res.success?
         doi = JSON.parse(res.body)['DOI']
         settings.shorts.insert({:short_doi => normal_short_doi, :doi => doi})

@@ -47,7 +47,7 @@
   .facet-spacer {
     margin-bottom: 1em;
   }
-  
+
 - if page.has_key?(:funder)
   .facets
     .funder-header
@@ -68,14 +68,15 @@
         - else
           %span.funder-hl= name
 
-.facets  
-  - page[:branding][:facet_fields].each do |n|
+.facets
+  - page[:branding][:facet_fields].keys.each do |n|
     - name = n.to_s
-    - values = page[:facets][name]
+    - heading = page[:branding][:facet_fields][n]
+    - values = page[:facets][name]["values"]
     .mini-page-header
-      %h6= name.gsub(/_str/, '').gsub(/_/, ' ')
+      %h6= heading.gsub(/_str/, '').gsub(/_/, ' ')
     %ul.nav.nav-list
-      - values.take(20).each_slice(2) do |value_name, value_count|
+      - values.each_pair do |value_name, value_count|
         - unless value_count.zero?
           - if page[:facet_query].has_key?(name) && page[:facet_query][name].include?(value_name)
             %li.active
@@ -87,5 +88,5 @@
             %li
               %a{:href => "#{facet_link(name, value_name)}"}
                 %i.icon-check-empty
-                = value_name  
+                = value_name
                 %span.number= "(#{value_count})"

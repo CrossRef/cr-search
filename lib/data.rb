@@ -3,7 +3,7 @@ require 'mongo'
 module MongoData
 
   def self.db
-    @db ||= Mongo::Connection.new(conf['mongo_host'])[conf['mongo_db']]
+    @db ||= Mongo::Connection.new(ENV["MONGO_HOST"])[conf['mongo_db']]
   end
 
   def self.coll name

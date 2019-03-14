@@ -1,7 +1,8 @@
-FROM ruby:2.1
-
-COPY . /app
-COPY ./conf/app.json.docker /app/conf/app.json
-WORKDIR /app
+FROM ruby:2.4.4
+COPY . /crmds
+COPY ./conf/app.json.docker /crmds/conf/app.json
+WORKDIR /crmds
 
 RUN bundle install
+
+EXPOSE 3000
